@@ -1,7 +1,15 @@
+import { HeroSection } from "@/components/home/HeroSection"
+import { RoleSelector } from "@/components/home/RoleSelector"
+import { FeaturedModules } from "@/components/home/FeaturedModules"
+import { ValueProposition } from "@/components/home/ValueProposition"
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">AI Literacy</h1>
-    </div>
+    <>
+      <HeroSection />
+      <RoleSelector />
+      <FeaturedModules />
+      <ValueProposition />
+    </>
   )
 }

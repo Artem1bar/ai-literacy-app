@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react"
 import { Routes, Route } from "react-router"
+import { RootLayout } from "@/components/layout/RootLayout"
 
 const Home = lazy(() => import("@/pages/Home"))
 const Learn = lazy(() => import("@/pages/Learn"))
@@ -10,23 +11,65 @@ const Profile = lazy(() => import("@/pages/Profile"))
 
 function Loading() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-muted-foreground">Loading...</div>
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="text-muted-foreground text-sm">Loading...</div>
     </div>
   )
 }
 
 export default function App() {
   return (
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/learn" element={<Learn />} />
-        <Route path="/learn/:slug" element={<Module />} />
-        <Route path="/lab" element={<Lab />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
-    </Suspense>
+    <Routes>
+      <Route element={<RootLayout />}>
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Home />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/learn"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Learn />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/learn/:slug"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Module />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/lab"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Lab />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/resources"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Resources />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Profile />
+            </Suspense>
+          }
+        />
+      </Route>
+    </Routes>
   )
 }
