@@ -14,7 +14,8 @@ export default function Module() {
   const { slug } = useParams<{ slug: string }>()
   const module = MODULES.find((m) => m.slug === slug)
 
-  const completed = useProgressStore((s) => s.completed[module?.id ?? ""] ?? [])
+  const completedMap = useProgressStore((s) => s.completed)
+  const completed = completedMap[module?.id ?? ""] ?? []
   const getModuleProgress = useProgressStore((s) => s.getModuleProgress)
   const markSectionComplete = useProgressStore((s) => s.markSectionComplete)
   const markSectionIncomplete = useProgressStore((s) => s.markSectionIncomplete)

@@ -10,7 +10,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ module, activeSectionId }: SidebarProps) {
-  const completed = useProgressStore((s) => s.completed[module.id] ?? [])
+  const completedMap = useProgressStore((s) => s.completed)
+  const completed = completedMap[module.id] ?? []
 
   return (
     <aside className="w-56 shrink-0">
