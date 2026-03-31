@@ -3,7 +3,6 @@ import { Separator } from "@/components/ui/separator"
 import { TemplateSelector } from "@/components/lab/TemplateSelector"
 import { FrameworkPicker } from "@/components/lab/FrameworkPicker"
 import { PromptEditor } from "@/components/lab/PromptEditor"
-import { ResponseViewer } from "@/components/lab/ResponseViewer"
 import { PromptScorer } from "@/components/lab/PromptScorer"
 import { usePromptLab } from "@/hooks/usePromptLab"
 
@@ -45,7 +44,7 @@ export default function Lab() {
           <PromptScorer score={lab.score} />
         </div>
 
-        {/* Right panel — editor + response */}
+        {/* Right panel — editor only */}
         <div className="flex flex-col gap-6">
           <PromptEditor
             value={lab.prompt}
@@ -53,12 +52,6 @@ export default function Lab() {
             onSubmit={() => void lab.submit()}
             onClear={lab.clear}
             isLoading={lab.isLoading}
-          />
-
-          <ResponseViewer
-            response={lab.response}
-            isLoading={lab.isLoading}
-            error={lab.error}
           />
         </div>
       </div>

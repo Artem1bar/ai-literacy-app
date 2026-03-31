@@ -33,12 +33,9 @@ export function HeroSection() {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg" className="gap-2">
               <Link to={role ? ROUTES.LEARN : ROUTES.HOME + "#roles"}>
-                {role ? "Continue Learning" : "Get Started"}
+                Get Started
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to={ROUTES.LAB}>Try Prompt Lab</Link>
             </Button>
           </div>
 
