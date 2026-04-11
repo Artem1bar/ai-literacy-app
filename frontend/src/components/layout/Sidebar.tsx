@@ -17,7 +17,7 @@ export function Sidebar({ module, activeSectionId }: SidebarProps) {
     <aside className="w-56 shrink-0">
       <div className="sticky top-20">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Sections
+          In this module
         </p>
         <nav className="flex flex-col gap-1">
           {module.sections.map((section) => {
@@ -49,7 +49,7 @@ export function Sidebar({ module, activeSectionId }: SidebarProps) {
             to="/learn"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            ← All modules
+            ← Back to all modules
           </Link>
         </div>
       </div>

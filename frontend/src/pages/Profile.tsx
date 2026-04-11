@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { UserCircle, Trophy, RotateCcw, GraduationCap, BookOpen, Code } from "lucide-react"
+import { Trophy, RotateCcw, GraduationCap, BookOpen, Code } from "lucide-react"
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { ProgressBar } from "@/components/learn/ProgressBar"
+import { QuizReview } from "@/components/profile/QuizReview"
 import { MODULES } from "@/data/modules"
 import { useProgressStore } from "@/store/progressStore"
 import { useRole } from "@/hooks/useRole"
@@ -49,9 +50,14 @@ export default function Profile() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-8">
-        <UserCircle className="h-5 w-5 text-primary" />
-        <h1 className="text-3xl font-bold">Profile</h1>
+      <div className="mb-8">
+        <p className="label-comment text-primary/75 mb-3">// your workspace</p>
+        <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+        <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
+          Everything you've read, finished, and answered. Review what's due, switch roles when
+          your work changes, or start over if you want a clean slate — it's all local to your
+          browser, no account required.
+        </p>
       </div>
 
       {/* Role card */}
@@ -65,9 +71,9 @@ export default function Profile() {
                 </div>
               )}
               <div>
-                <p className="text-xs text-muted-foreground mb-0.5">Current role</p>
+                <p className="text-xs text-muted-foreground mb-0.5">Learning as</p>
                 <p className="font-semibold">
-                  {roleConfig?.label ?? "No role selected"}
+                  {roleConfig?.label ?? "— pick a role to get started"}
                 </p>
               </div>
             </div>
@@ -96,20 +102,23 @@ export default function Profile() {
         </CardContent>
       </Card>
 
+      {/* Spaced repetition review (only renders if items are due) */}
+      <QuizReview />
+
       {/* Overall progress */}
       <Card className="mb-6">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <Trophy className="h-4 w-4 text-primary" />
-            <h2 className="font-semibold">Overall Progress</h2>
+            <h2 className="font-semibold">How far you've come</h2>
           </div>
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
-          <ProgressBar value={overallProgress} label="All modules" />
+          <ProgressBar value={overallProgress} label="Across the whole curriculum" />
           <div className="flex gap-4 text-sm text-muted-foreground">
-            <span>{completedSections} / {totalSections} sections completed</span>
+            <span>{completedSections} of {totalSections} sections finished</span>
             {quizTotal > 0 && (
-              <span>{quizCorrect} / {quizTotal} quizzes correct</span>
+              <span>{quizCorrect} of {quizTotal} quiz questions correct</span>
             )}
           </div>
         </CardContent>
@@ -117,7 +126,7 @@ export default function Profile() {
 
       {/* Per-module progress */}
       <div className="space-y-3 mb-8">
-        <h2 className="font-semibold">Module Progress</h2>
+        <h2 className="font-semibold">By module</h2>
         {MODULES.map((module) => {
           const progress = getModuleProgress(module.id, module.sections.length)
           const done = completed[module.id] ?? []
@@ -151,21 +160,22 @@ export default function Profile() {
           className="gap-1.5 text-destructive hover:text-destructive"
         >
           <RotateCcw className="h-3.5 w-3.5" />
-          Reset All Progress
+          Start over
         </Button>
       </div>
 
       <Dialog open={confirmReset} onOpenChange={setConfirmReset}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset progress?</DialogTitle>
+            <DialogTitle>Clear everything and start over?</DialogTitle>
             <DialogDescription>
-              This will clear all completed sections and quiz scores. This cannot be undone.
+              This wipes every completed section, every quiz result, and your spaced-repetition
+              queue. It happens locally — nothing is sent anywhere — but there's no undo.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmReset(false)}>
-              Cancel
+              Keep my progress
             </Button>
             <Button
               variant="destructive"
@@ -174,7 +184,7 @@ export default function Profile() {
                 setConfirmReset(false)
               }}
             >
-              Reset
+              Yes, reset everything
             </Button>
           </DialogFooter>
         </DialogContent>

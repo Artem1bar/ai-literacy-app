@@ -1,3 +1,4 @@
+import { motion } from "framer-motion"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -42,11 +43,14 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
             <TabsContent key={cat.id} value={cat.id} className="mt-0">
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
                 {templates.map((t) => (
-                  <button
+                  <motion.button
                     key={t.id}
                     onClick={() => onSelect(t)}
+                    whileHover={{ x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     className={cn(
-                      "w-full text-left rounded-md border px-3 py-2 text-sm transition-all hover:border-primary/50 hover:bg-accent/50",
+                      "w-full text-left rounded-md border px-3 py-2 text-sm transition-colors hover:border-primary/50 hover:bg-accent/50",
                       selected?.id === t.id && "border-primary bg-primary/10",
                     )}
                   >
@@ -59,7 +63,7 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
                       {t.description}
                     </p>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </TabsContent>

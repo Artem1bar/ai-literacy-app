@@ -1,53 +1,77 @@
 import { Link } from "react-router"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { ROUTES } from "@/lib/constants"
 import { useRole } from "@/hooks/useRole"
+
+const STATS = [
+  { value: "30", label: "modules" },
+  { value: "15", label: "templates" },
+  { value: "03", label: "frameworks" },
+  { value: "live", label: "Claude API" },
+]
 
 export function HeroSection() {
   const { role } = useRole()
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-background">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background pointer-events-none" />
+      {/* Indigo top-edge line */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+      {/* Ambient glow — fixed, never flickers */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-80 w-[500px] rounded-full bg-primary/6 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <Badge variant="secondary" className="mb-4 inline-flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3" />
-            Grounded in OECD, Stanford & Anthropic research
-          </Badge>
+      <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32 lg:px-8">
+        {/* Comment label — CSS animation, visible immediately */}
+        <p className="label-comment text-primary/75 mb-5 animate-fade-in">
+          // thirty modules · three role paths · one live Claude API
+        </p>
 
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Master AI Literacy.{" "}
-            <span className="text-primary">Actually Use It.</span>
-          </h1>
+        {/* Headline */}
+        <h1 className="max-w-2xl text-[2.6rem] font-bold tracking-tight leading-[1.1] sm:text-5xl lg:text-[3.25rem] animate-slide-up">
+          Learn to use AI{" "}
+          <span className="text-primary">like it matters.</span>
+        </h1>
 
-          <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto">
-            A research-backed, role-adaptive learning platform for prompt engineering,
-            Claude workflows, and responsible AI — built for students, educators, and developers.
-          </p>
+        {/* Subtitle */}
+        <p className="mt-5 max-w-xl text-sm text-muted-foreground leading-relaxed sm:text-base animate-slide-up delay-100">
+          A working curriculum on prompt engineering, Claude workflows, and responsible AI —
+          built on OECD, Stanford, and Anthropic research, tested against a real API.
+          Everything you read, you can try on the next tab.
+        </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild size="lg" className="gap-2">
-              <Link to={role ? ROUTES.LEARN : ROUTES.HOME + "#roles"}>
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+        {/* CTAs */}
+        <div className="mt-8 flex flex-wrap gap-3 animate-slide-up delay-200">
+          <Button asChild size="lg" className="gap-2 group">
+            <Link to={role ? ROUTES.LEARN : ROUTES.HOME + "#roles"}>
+              {role ? "Continue learning" : "Pick your path"}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="border-border/50 hover:border-primary/35"
+          >
+            <Link to={ROUTES.LAB}>Open the Prompt Lab</Link>
+          </Button>
+        </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-            <span>5 learning modules</span>
-            <span className="hidden sm:inline text-border">|</span>
-            <span>15 prompt templates</span>
-            <span className="hidden sm:inline text-border">|</span>
-            <span>Live Claude API integration</span>
-            <span className="hidden sm:inline text-border">|</span>
-            <span>3 role-based paths</span>
-          </div>
+        {/* Stats — monospace terminal row */}
+        <div className="mt-12 flex items-center gap-8 animate-fade-in delay-300">
+          {STATS.map((stat) => (
+            <div key={stat.label} className="flex flex-col gap-0.5">
+              <span className="font-mono-data text-xl font-medium text-foreground leading-none">
+                {stat.value}
+              </span>
+              <span className="label-comment">{stat.label}</span>
+            </div>
+          ))}
+          <div className="h-8 w-px bg-border mx-2 hidden sm:block" />
+          <span className="label-comment text-muted-foreground/45 hidden sm:block">
+            sourced from OECD · Stanford · Anthropic
+          </span>
         </div>
       </div>
     </section>

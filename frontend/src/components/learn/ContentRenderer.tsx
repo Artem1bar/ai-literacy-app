@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle, XCircle, Info, AlertTriangle, Lightbulb, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -7,19 +8,29 @@ import type { ContentBlock } from "@/data/types"
 
 interface ContentRendererProps {
   blocks: readonly ContentBlock[]
+  moduleId: string
+  sectionId: string
 }
 
-export function ContentRenderer({ blocks }: ContentRendererProps) {
+export function ContentRenderer({ blocks, moduleId, sectionId }: ContentRendererProps) {
   return (
     <div className="space-y-5">
       {blocks.map((block, i) => (
-        <BlockRenderer key={i} block={block} />
+        <BlockRenderer key={i} block={block} moduleId={moduleId} sectionId={sectionId} />
       ))}
     </div>
   )
 }
 
-function BlockRenderer({ block }: { block: ContentBlock }) {
+function BlockRenderer({
+  block,
+  moduleId,
+  sectionId,
+}: {
+  block: ContentBlock
+  moduleId: string
+  sectionId: string
+}) {
   switch (block.type) {
     case "heading":
       return <HeadingBlock block={block} />
@@ -32,7 +43,7 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
     case "callout":
       return <CalloutBlock block={block} />
     case "quiz":
-      return <QuizBlock block={block} />
+      return <QuizBlock block={block} moduleId={moduleId} sectionId={sectionId} />
     case "divider":
       return <hr className="border-border" />
     case "image":
@@ -148,17 +159,30 @@ function CalloutBlock({ block }: { block: Extract<ContentBlock, { type: "callout
   )
 }
 
-function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }) {
+function QuizBlock({
+  block,
+  moduleId,
+  sectionId,
+}: {
+  block: Extract<ContentBlock, { type: "quiz" }>
+  moduleId: string
+  sectionId: string
+}) {
   const [selected, setSelected] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
-  const saveQuizScore = useProgressStore((s) => s.saveQuizScore)
+  const recordQuizAttempt = useProgressStore((s) => s.recordQuizAttempt)
 
   const isCorrect = selected === block.correctIndex
 
   const handleSubmit = () => {
     if (selected === null) return
     setSubmitted(true)
-    saveQuizScore(block.id, isCorrect ? 1 : 0)
+    recordQuizAttempt({
+      quizId: block.id,
+      score: isCorrect ? 1 : 0,
+      moduleId,
+      sectionId,
+    })
   }
 
   return (
@@ -169,12 +193,16 @@ function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }
           const isSelected = selected === i
           const showResult = submitted && isSelected
           return (
-            <button
+            <motion.button
               key={i}
               onClick={() => !submitted && setSelected(i)}
               disabled={submitted}
+              whileHover={!submitted ? { x: 2 } : {}}
+              whileTap={!submitted ? { scale: 0.99 } : {}}
+              animate={isSelected && !submitted ? { scale: [1, 1.01, 1] } : {}}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
               className={cn(
-                "w-full text-left rounded-md border px-4 py-2.5 text-sm transition-all",
+                "w-full text-left rounded-md border px-4 py-2.5 text-sm transition-colors",
                 !submitted && "hover:border-primary/50 hover:bg-primary/5",
                 isSelected && !submitted && "border-primary bg-primary/10",
                 showResult && isCorrect && "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400",
@@ -187,7 +215,7 @@ function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }
                 {showResult && !isCorrect && <XCircle className="h-4 w-4 shrink-0 text-red-500" />}
                 {option}
               </span>
-            </button>
+            </motion.button>
           )
         })}
       </div>
@@ -202,13 +230,20 @@ function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }
           Submit Answer
         </Button>
       ) : (
-        <div className={cn(
-          "mt-4 rounded-md p-3 text-sm",
-          isCorrect ? "bg-green-500/10 text-green-700 dark:text-green-400" : "bg-red-500/10 text-red-700 dark:text-red-400",
-        )}>
-          <p className="font-semibold mb-1">{isCorrect ? "Correct!" : "Not quite."}</p>
-          <p>{block.explanation}</p>
-        </div>
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className={cn(
+              "mt-4 rounded-md p-3 text-sm",
+              isCorrect ? "bg-green-500/10 text-green-700 dark:text-green-400" : "bg-red-500/10 text-red-700 dark:text-red-400",
+            )}
+          >
+            <p className="font-semibold mb-1">{isCorrect ? "Correct!" : "Not quite."}</p>
+            <p>{block.explanation}</p>
+          </motion.div>
+        </AnimatePresence>
       )}
     </div>
   )
