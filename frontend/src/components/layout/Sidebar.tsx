@@ -14,9 +14,9 @@ export function Sidebar({ module, activeSectionId }: SidebarProps) {
   const completed = completedMap[module.id] ?? []
 
   return (
-    <aside className="w-56 shrink-0">
-      <div className="sticky top-20">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <aside className="w-64 shrink-0">
+      <div className="sticky top-24">
+        <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           In this module
         </p>
         <nav className="flex flex-col gap-1">
@@ -28,18 +28,18 @@ export function Sidebar({ module, activeSectionId }: SidebarProps) {
                 key={section.id}
                 href={`#${section.id}`}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                  "flex items-start gap-2.5 rounded-md px-3 py-2.5 text-base transition-colors",
                   isActive
                     ? "bg-accent text-accent-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
                 )}
               >
                 {isDone ? (
-                  <CheckCircle className="h-3.5 w-3.5 shrink-0 text-green-500" />
+                  <CheckCircle className="h-4 w-4 shrink-0 text-green-500 mt-0.5" />
                 ) : (
-                  <Circle className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
+                  <Circle className="h-4 w-4 shrink-0 text-muted-foreground/60 mt-0.5" />
                 )}
-                <span className="line-clamp-2">{section.title}</span>
+                <span className="line-clamp-2 leading-snug">{section.title}</span>
               </a>
             )
           })}
@@ -47,7 +47,7 @@ export function Sidebar({ module, activeSectionId }: SidebarProps) {
         <div className="mt-6">
           <Link
             to="/learn"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back to all modules
           </Link>

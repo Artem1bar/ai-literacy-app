@@ -5,7 +5,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "student",
     label: "Student",
     description:
-      "You're writing essays, studying for exams, or working through research. You want AI to make you sharper, not to do your thinking for you — and you'd rather know where the integrity lines are than find out later.",
+      "Essays, exams, research. Use AI to sharpen your thinking — and know where the integrity lines sit before you cross them.",
     icon: "GraduationCap",
     color: "blue",
   },
@@ -13,7 +13,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "professor",
     label: "Professor / Educator",
     description:
-      "You teach. You're designing assignments that still mean something in a world where every student has access to a competent writer, planning assessments that are hard to fake, and trying to decide what AI literacy looks like in your own classroom.",
+      "Design assignments that still mean something. Plan assessments that are hard to fake. Teach AI literacy without winging it.",
     icon: "BookOpen",
     color: "purple",
   },
@@ -21,7 +21,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "developer",
     label: "Developer",
     description:
-      "You build things. You want the practical stuff: writing system prompts that hold up under pressure, using the Claude API and Claude Code without wasting tokens, and understanding what happens when you give a model tools and let it run.",
+      "System prompts that hold up. The API without wasted tokens. Agents and tool use without the footguns.",
     icon: "Code",
     color: "green",
   },

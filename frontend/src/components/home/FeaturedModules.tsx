@@ -15,35 +15,35 @@ export function FeaturedModules() {
 
   return (
     <section className="border-t border-border bg-card/20">
-      <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8">
+      <div className="mx-auto max-w-6xl px-6 py-20 lg:px-8">
         <motion.div
-          className="flex items-end justify-between mb-8"
+          className="flex items-end justify-between mb-10 flex-wrap gap-4"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.45 }}
         >
           <div>
-            <p className="label-comment text-primary/75 mb-2">
+            <p className="label-comment text-primary mb-3">
               {role ? `// queued up for you` : "// start here"}
             </p>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-3xl font-bold sm:text-4xl leading-tight">
               {role
                 ? role === "student"
-                  ? "Where students tend to begin"
+                  ? "Start with these."
                   : role === "professor"
-                    ? "Where educators tend to begin"
-                    : "Where developers tend to begin"
-                : "Three modules to start with"}
+                    ? "Start with these."
+                    : "Start with these."
+                : "Start with these three."}
             </h2>
           </div>
 
           <Link
             to={ROUTES.LEARN}
-            className="hidden sm:flex items-center gap-1 label-comment text-muted-foreground/50 hover:text-primary transition-colors group"
+            className="hidden sm:flex items-center gap-1.5 label-comment text-muted-foreground hover:text-primary transition-colors group"
           >
             see all thirty
-            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </motion.div>
 

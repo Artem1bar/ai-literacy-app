@@ -60,9 +60,9 @@ export default function Module() {
   const nextSection = currentIndex < module.sections.length - 1 ? module.sections[currentIndex + 1] : null
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+      <div className="flex items-center gap-2 text-base text-muted-foreground mb-6">
         <Link to="/learn" className="hover:text-foreground transition-colors">
           Learn
         </Link>
@@ -71,27 +71,27 @@ export default function Module() {
       </div>
 
       {/* Module header */}
-      <div className="mb-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-10">
+        <div className="flex flex-wrap items-start justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{module.title}</h1>
-            <p className="mt-2 text-muted-foreground max-w-2xl">{module.description}</p>
-            <div className="flex flex-wrap items-center gap-3 mt-3">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" />
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">{module.title}</h1>
+            <p className="mt-4 text-lg text-muted-foreground max-w-3xl leading-relaxed">{module.description}</p>
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5 text-base text-muted-foreground">
+                <Clock className="h-4 w-4" />
                 {module.estimatedMinutes} min
               </div>
-              <Separator orientation="vertical" className="h-4" />
-              <div className="flex gap-1">
+              <Separator orientation="vertical" className="h-5" />
+              <div className="flex gap-1.5">
                 {module.roles.map((role) => (
-                  <span key={role} className="font-mono-data text-[10px] px-1.5 py-0.5 rounded border border-border/40 text-muted-foreground/50">
+                  <span key={role} className="font-mono-data text-xs px-2 py-0.5 rounded border border-border/60 text-muted-foreground">
                     [{role}]
                   </span>
                 ))}
               </div>
             </div>
           </div>
-          <div className="w-48">
+          <div className="w-56">
             <ProgressBar value={progress} label="Module progress" />
           </div>
         </div>

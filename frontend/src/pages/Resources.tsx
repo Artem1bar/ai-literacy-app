@@ -37,13 +37,12 @@ export default function Resources() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <p className="label-comment text-primary/75 mb-3">// further reading</p>
-        <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
-        <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          A short, opinionated shelf of the things we actually recommend — official documentation,
-          the AI literacy frameworks our modules are built on, prompt engineering tutorials worth
-          your time, and a handful of repos and tools that keep showing up in real work.
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// further reading</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Resources</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          An opinionated shelf of the things we actually recommend —
+          official docs, frameworks, tutorials, and tools.
         </p>
       </div>
 

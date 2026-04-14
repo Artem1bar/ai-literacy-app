@@ -50,13 +50,11 @@ export default function Profile() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <p className="label-comment text-primary/75 mb-3">// your workspace</p>
-        <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-        <p className="mt-2 text-sm text-muted-foreground max-w-xl leading-relaxed">
-          Everything you've read, finished, and answered. Review what's due, switch roles when
-          your work changes, or start over if you want a clean slate — it's all local to your
-          browser, no account required.
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// your workspace</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Profile</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          Everything you've read, finished, and answered — all local to your browser.
         </p>
       </div>
 

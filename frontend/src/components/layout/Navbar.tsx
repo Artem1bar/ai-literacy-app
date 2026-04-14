@@ -56,18 +56,18 @@ export function Navbar() {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none" />
 
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
-        <div className="flex h-13 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
 
           {/* Logo */}
           <Link
             to={ROUTES.HOME}
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-2.5 group"
             aria-label="AI Literacy home"
           >
-            <div className="rounded border border-border/60 p-1.5 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
+            <div className="rounded-md border border-border p-2 group-hover:border-primary/40 group-hover:bg-primary/5 transition-all">
               <Brain className="h-4 w-4 text-primary" />
             </div>
-            <span className="font-mono-data text-sm font-medium text-foreground hidden sm:inline tracking-tight">
+            <span className="font-mono-data text-base font-medium text-foreground hidden sm:inline tracking-tight">
               {APP_NAME}
             </span>
           </Link>
@@ -87,9 +87,9 @@ export function Navbar() {
                   <Link
                     to={link.href}
                     className={cn(
-                      "block px-3 py-1.5 text-sm rounded transition-colors",
+                      "block px-4 py-2 text-base rounded-md transition-colors",
                       active
-                        ? "text-foreground bg-accent"
+                        ? "text-foreground bg-accent font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
                     )}
                   >
@@ -104,7 +104,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             {role && roleConfig && RoleIcon && (
               <Link to={ROUTES.HOME}>
-                <span className="hidden sm:flex items-center gap-1.5 font-mono-data text-xs px-2 py-1 rounded border border-border/60 text-muted-foreground hover:border-primary/30 hover:text-primary transition-all">
+                <span className="hidden sm:flex items-center gap-1.5 font-mono-data text-sm px-2.5 py-1 rounded border border-border text-muted-foreground hover:border-primary/40 hover:text-primary transition-all">
                   [{ROLE_TOKEN[role]}]
                 </span>
               </Link>

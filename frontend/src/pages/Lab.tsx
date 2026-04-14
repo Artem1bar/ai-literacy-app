@@ -35,13 +35,12 @@ export default function Lab() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-8">
-        <p className="label-comment text-primary/75 mb-3">// the workbench</p>
-        <h1 className="text-3xl font-bold tracking-tight">Prompt Lab</h1>
-        <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          A working prompt editor wired directly to Claude Sonnet 4.6.
-          Start from a template, run it through a framework, or write freehand —
-          then send it and see exactly what comes back. This is where the reading turns into practice.
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// the workbench</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Prompt Lab</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          A working prompt editor wired to Claude Sonnet 4.6.
+          Start from a template, run it through a framework, or write freehand.
         </p>
       </div>
 

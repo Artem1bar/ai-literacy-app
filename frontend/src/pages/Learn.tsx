@@ -20,14 +20,12 @@ export default function Learn() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
       {/* Header — matches // comment label system */}
-      <div className="mb-8">
-        <p className="label-comment text-primary/75 mb-3">// the curriculum</p>
-        <h1 className="text-3xl font-bold tracking-tight">Learn</h1>
-        <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          Thirty modules on the parts of AI that actually matter day to day:
-          fundamentals, prompt engineering, Claude workflows, responsible use,
-          and the advanced techniques that separate fluent users from casual ones.
-          Filter by role to surface what's most relevant to you.
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// the curriculum</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Learn</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          Thirty modules on the parts of AI that matter day to day.
+          Filter by role to surface what's most relevant.
         </p>
       </div>
 
