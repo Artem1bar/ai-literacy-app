@@ -7,6 +7,13 @@ export const ROUTES = {
   LAB: "/lab",
   RESOURCES: "/resources",
   PROFILE: "/profile",
+  OCCUPATIONS: "/occupations",
+  OCCUPATION_DETAIL: "/occupations/:code",
+  ONBOARDING: "/onboarding",
+  COMPARE: "/compare/:socA/:socB",
+  GLOSSARY: "/glossary",
+  MEGAPROJECTS: "/megaprojects",
+  ASSESSMENT: "/assessment",
 } as const
 
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000"

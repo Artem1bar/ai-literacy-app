@@ -1,0 +1,27 @@
+{
+  "sources": {
+    "eloundou-2024": {
+      "file": "research/eloundou/eloundou-2024-tasks.csv",
+      "sha256": null,
+      "ingested_at": null,
+      "ingested_by_script": "scripts/ingest_eloundou.py",
+      "notes": "Raw task-level exposure labels not yet dropped into repo. Aggregate figures cited directly in seeds/exposure_priors.json."
+    },
+    "onet-28": {
+      "file": "research/onet/onet-28.0-tasks.csv",
+      "sha256": null,
+      "ingested_at": null,
+      "ingested_by_script": "scripts/ingest_onet.py",
+      "notes": "O*NET 28.0 public-domain tables; pending first ingest."
+    },
+    "bls-oews-la-2025": {
+      "file": "research/bls-oews-la/oes_la_2025.xlsx",
+      "sha256": null,
+      "ingested_at": null,
+      "ingested_by_script": "scripts/ingest_bls_oews.py",
+      "notes": "Annual BLS OEWS Louisiana release; authored figures pending ingest."
+    }
+  },
+  "corpus_version": "0.1.0-mvp",
+  "last_full_rebuild": null
+}

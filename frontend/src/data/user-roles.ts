@@ -25,4 +25,12 @@ export const USER_ROLES: readonly RoleConfig[] = [
     icon: "Code",
     color: "green",
   },
+  {
+    id: "worker",
+    label: "Louisiana Worker",
+    description:
+      "Working in a Louisiana industry — energy, manufacturing, healthcare, logistics, or skilled trades. Learn how AI will change your occupation and what skills hold the most value.",
+    icon: "HardHat",
+    color: "amber",
+  },
 ] as const

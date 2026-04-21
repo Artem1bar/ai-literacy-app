@@ -4,7 +4,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from config import settings
-from routers import health, prompt
+from routers import health, occupation, prompt
 
 app = FastAPI(title="AI Literacy API")
 
@@ -21,3 +21,4 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(prompt.router)
+app.include_router(occupation.router)
