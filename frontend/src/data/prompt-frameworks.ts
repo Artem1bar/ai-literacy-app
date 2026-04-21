@@ -5,7 +5,7 @@ export const PROMPT_FRAMEWORKS: readonly PromptFramework[] = [
     id: "co-star",
     name: "CO-STAR",
     description:
-      "Context, Objective, Style, Tone, Audience, Response — a comprehensive framework for structured prompts that covers all essential dimensions.",
+      "Context, Objective, Style, Tone, Audience, Response. Six slots that force you to name everything you'd otherwise leave implicit — the kind of structure that turns a vague ask into a reliable one.",
     steps: [
       {
         key: "context",
@@ -59,7 +59,7 @@ export const PROMPT_FRAMEWORKS: readonly PromptFramework[] = [
     id: "risen",
     name: "RISEN",
     description:
-      "Role, Instructions, Steps, End goal, Narrowing — a goal-oriented framework ideal for task-focused prompts with clear deliverables.",
+      "Role, Instructions, Steps, End goal, Narrowing. Built for task work where the output is something concrete — a plan, a rubric, a document — and the constraints actually matter.",
     steps: [
       {
         key: "role",
@@ -106,7 +106,7 @@ export const PROMPT_FRAMEWORKS: readonly PromptFramework[] = [
     id: "chain-of-thought",
     name: "Chain-of-Thought",
     description:
-      "Guide the AI to think step-by-step through a problem, showing its reasoning process. Produces more accurate and transparent results for complex tasks.",
+      "Ask the model to work the problem out loud — state the approach, apply the criteria, show the reasoning. Harder problems get better answers because the intermediate tokens give the model more room to think.",
     steps: [
       {
         key: "problem",

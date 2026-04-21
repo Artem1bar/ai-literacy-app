@@ -24,7 +24,7 @@ export function PromptScorer({ score }: PromptScorerProps) {
     <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Prompt Score
+          Quality check
         </p>
         <span className={cn("text-xl font-bold tabular-nums", scoreColor(score.total))}>
           {score.total}

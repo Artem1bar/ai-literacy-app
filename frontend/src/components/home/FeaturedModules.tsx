@@ -1,6 +1,6 @@
 import { Link } from "react-router"
 import { ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
 import { ModuleCard } from "@/components/learn/ModuleCard"
 import { MODULES } from "@/data/modules"
 import { useRole } from "@/hooks/useRole"
@@ -14,36 +14,70 @@ export function FeaturedModules() {
     : MODULES.slice(0, 3)
 
   return (
-    <section className="border-t border-border bg-muted/30">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+    <section className="border-t border-border bg-card/20">
+      <div className="mx-auto max-w-6xl px-6 py-20 lg:px-8">
+        <motion.div
+          className="flex items-end justify-between mb-10 flex-wrap gap-4"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.45 }}
+        >
           <div>
-            <h2 className="text-2xl font-bold">
-              {role ? "Your Learning Path" : "Featured Modules"}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {role
-                ? `Modules tailored for ${role === "student" ? "students" : role === "professor" ? "educators" : "developers"}`
-                : "Start with the fundamentals"}
+            <p className="label-comment text-primary mb-3">
+              {role ? `// queued up for you` : "// start here"}
             </p>
+            <h2 className="text-3xl font-bold sm:text-4xl leading-tight">
+              {role
+                ? role === "student"
+                  ? "Start with these."
+                  : role === "professor"
+                    ? "Start with these."
+                    : "Start with these."
+                : "Start with these three."}
+            </h2>
           </div>
-          <Button asChild variant="ghost" size="sm" className="gap-1 hidden sm:flex">
-            <Link to={ROUTES.LEARN}>
-              View all <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            to={ROUTES.LEARN}
+            className="hidden sm:flex items-center gap-1.5 label-comment text-muted-foreground hover:text-primary transition-colors group"
+          >
+            see all thirty
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08 } },
+          }}
+        >
           {featured.map((module) => (
-            <ModuleCard key={module.id} module={module} />
+            <motion.div
+              key={module.id}
+              variants={{
+                hidden: { opacity: 0, y: 16 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const } },
+              }}
+            >
+              <ModuleCard module={module} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-6 text-center sm:hidden">
-          <Button asChild variant="outline" size="sm">
-            <Link to={ROUTES.LEARN}>View all modules</Link>
-          </Button>
+        <div className="mt-5 sm:hidden">
+          <Link
+            to={ROUTES.LEARN}
+            className="flex items-center gap-1 label-comment text-muted-foreground/50 hover:text-primary transition-colors group w-fit"
+          >
+            see all thirty modules
+            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </div>
       </div>
     </section>

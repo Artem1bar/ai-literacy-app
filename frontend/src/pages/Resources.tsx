@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ExternalLink, BookMarked } from "lucide-react"
+import { motion } from "framer-motion"
+import { ExternalLink } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -36,75 +37,74 @@ export default function Resources() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-2">
-        <BookMarked className="h-5 w-5 text-primary" />
-        <h1 className="text-3xl font-bold">Resources</h1>
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// further reading</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Resources</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          An opinionated shelf of the things we actually recommend —
+          official docs, frameworks, tutorials, and tools.
+        </p>
       </div>
-      <p className="text-muted-foreground mb-8">
-        Curated links to official documentation, AI literacy frameworks, prompt engineering guides,
-        and GitHub repositories.
-      </p>
 
-      <div className="flex flex-col gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <Tabs value={category} onValueChange={(v) => setCategory(v as ResourceCategory | "all")}>
-          <TabsList className="h-auto w-full gap-1 overflow-x-auto whitespace-nowrap sm:w-fit">
+          <TabsList className="flex-wrap h-auto gap-1">
             {CATEGORIES.filter((c) => RESOURCES.some((r) => c === "all" || r.category === c)).map((c) => (
-              <TabsTrigger key={c} value={c} className="text-xs shrink-0">
+              <TabsTrigger key={c} value={c} className="text-xs">
                 {CATEGORY_LABELS[c]}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
-        <div className="flex items-center justify-between gap-3">
-          <Input
-            placeholder="Search resources..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full sm:w-64 text-sm"
-          />
-          <p className="shrink-0 text-xs text-muted-foreground">{filtered.length} results</p>
-        </div>
+        <Input
+          placeholder="Search by title, topic, or tag…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="sm:w-64 text-sm"
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((resource) => (
-          <a
+          <motion.a
             key={resource.id}
             href={resource.url}
             target="_blank"
             rel="noopener noreferrer"
             className="group block"
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
           >
-            <Card className="h-full transition-all hover:shadow-md hover:border-primary/40 cursor-pointer">
-              <CardContent className="p-4 sm:p-5">
+            <Card className="h-full transition-colors duration-150 hover:border-primary/30 cursor-pointer">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-sm sm:text-base font-semibold leading-snug group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-semibold leading-snug group-hover:text-primary transition-colors">
                     {resource.title}
                   </h3>
                   <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground mt-0.5" />
                 </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                   {resource.description}
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant="secondary" className="text-[10px]">
                     {CATEGORY_LABELS[resource.category]}
                   </Badge>
                   {resource.tags.slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" className="hidden sm:inline-flex text-[10px]">
+                    <Badge key={tag} variant="outline" className="text-[10px]">
                       {tag}
                     </Badge>
                   ))}
                 </div>
               </CardContent>
             </Card>
-          </a>
+          </motion.a>
         ))}
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-muted-foreground py-12">
-          No resources match your search.
+        <p className="label-comment text-center py-12">
+          nothing matches that search — try a shorter term
         </p>
       )}
     </div>

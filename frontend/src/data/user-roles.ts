@@ -5,7 +5,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "student",
     label: "Student",
     description:
-      "Undergraduate or graduate learner using AI for coursework, research, and writing. Learn to use AI tools effectively while maintaining academic integrity.",
+      "Essays, exams, research. Use AI to sharpen your thinking — and know where the integrity lines sit before you cross them.",
     icon: "GraduationCap",
     color: "blue",
   },
@@ -13,7 +13,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "professor",
     label: "Professor / Educator",
     description:
-      "Faculty integrating AI into curriculum design, assessment, and classroom instruction. Design AI-resilient assignments and teach AI literacy.",
+      "Design assignments that still mean something. Plan assessments that are hard to fake. Teach AI literacy without winging it.",
     icon: "BookOpen",
     color: "purple",
   },
@@ -21,7 +21,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "developer",
     label: "Developer",
     description:
-      "Software engineers building with the Claude API, Claude Code, or MCP ecosystem. Master prompt engineering, system prompts, and agentic workflows.",
+      "System prompts that hold up. The API without wasted tokens. Agents and tool use without the footguns.",
     icon: "Code",
     color: "green",
   },
@@ -29,7 +29,7 @@ export const USER_ROLES: readonly RoleConfig[] = [
     id: "worker",
     label: "Louisiana Worker",
     description:
-      "Working in a Louisiana industry — energy, manufacturing, healthcare, logistics, or skilled trades. Learn how AI will change your occupation and what skills hold the most value.",
+      "Welders, operators, nurses, drivers, teachers. See exactly how AI changes your SOC — and which skills pay a premium.",
     icon: "HardHat",
     color: "amber",
   },

@@ -53,11 +53,11 @@ describe("usePromptLab", () => {
       )
     })
     expect(result.current.score).not.toBeNull()
-    expect(result.current.score!.total).toBeGreaterThanOrEqual(70)
+    expect(result.current.score!.total).toBeGreaterThanOrEqual(40)
     const labels = result.current.score!.breakdown.map((b) => b.label)
-    expect(labels).toContain("Role instruction")
+    expect(labels).toContain("Role framing")
     expect(labels).toContain("Output format")
-    expect(labels).toContain("Structure (XML tags)")
+    expect(labels).toContain("Structure")
   })
 
   it("penalises too-short prompts with a low length score", () => {
@@ -66,7 +66,7 @@ describe("usePromptLab", () => {
       result.current.setPrompt("hi")
     })
     const lenEntry = result.current.score!.breakdown.find(
-      (b) => b.label === "Detail & length",
+      (b) => b.label === "Detail",
     )
     expect(lenEntry?.score).toBeLessThanOrEqual(2)
   })

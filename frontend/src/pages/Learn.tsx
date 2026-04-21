@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BookOpen } from "lucide-react"
+import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ModuleCard } from "@/components/learn/ModuleCard"
@@ -16,7 +16,7 @@ export default function Learn() {
   const [filter, setFilter] = useState<UserRole | "all">(profile.role ?? "all")
 
   const filtered =
-    filter === "all"
+    filter === "all" || filter === "worker"
       ? MODULES
       : MODULES.filter((m) => m.roles.includes(filter))
 
@@ -37,14 +37,12 @@ export default function Learn() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="mb-2 flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h1 className="text-3xl font-bold">Learn</h1>
-        </div>
-        <p className="text-muted-foreground">
-          Five research-backed modules covering AI fundamentals, prompt engineering,
-          Claude workflows, responsible use, and role-specific skills.
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// the curriculum</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Learn</h1>
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          Thirty modules on the parts of AI that matter day to day. Filter by role to
+          surface what's most relevant.
         </p>
       </div>
 
@@ -82,10 +80,22 @@ export default function Learn() {
         </p>
       )}
 
-      {/* Module grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {sorted.map((module) => (
-          <div key={module.id} className="relative">
+      {/* Module grid — stagger on filter change only */}
+      <motion.div
+        key={filter}
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        {sorted.map((module, i) => (
+          <motion.div
+            key={module.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.03 }}
+            className="relative"
+          >
             {recommendedIds.has(module.id) && (
               <Badge
                 variant="outline"
@@ -95,13 +105,13 @@ export default function Learn() {
               </Badge>
             )}
             <ModuleCard module={module} />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {sorted.length === 0 && (
-        <p className="py-12 text-center text-muted-foreground">
-          No modules found for this filter.
+        <p className="label-comment text-center py-12">
+          no modules match this filter
         </p>
       )}
     </div>

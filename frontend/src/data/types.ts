@@ -87,6 +87,13 @@ export type LiteracyDimension =
   | "ethical"
   | "domain-specific"
 
+/** A seedable Lab challenge associated with a module. */
+export interface LabChallenge {
+  readonly title: string
+  readonly brief: string
+  readonly starterPrompt: string
+}
+
 export interface Module {
   readonly id: string
   readonly slug: string
@@ -99,6 +106,8 @@ export interface Module {
   readonly sections: readonly Section[]
   /** Optional — used by the Phase 2 curriculum service to derive per-SOC paths. */
   readonly dimensions?: readonly LiteracyDimension[]
+  /** Optional challenge that can be seeded into the Prompt Lab. */
+  readonly labChallenge?: LabChallenge
 }
 
 export interface TemplatePlaceholder {
