@@ -587,7 +587,7 @@ Provide your review as a numbered list of issues, each with:
 client = anthropic.Anthropic()  # Uses ANTHROPIC_API_KEY env var
 
 message = client.messages.create(
-    model="claude-sonnet-4-6-20250514",
+    model="claude-sonnet-4-6",
     max_tokens=1024,
     system="You are a helpful coding assistant.",
     messages=[
@@ -606,7 +606,7 @@ print(message.content[0].text)`,
 const client = new Anthropic(); // Uses ANTHROPIC_API_KEY env var
 
 const message = await client.messages.create({
-  model: "claude-sonnet-4-6-20250514",
+  model: "claude-sonnet-4-6",
   max_tokens: 1024,
   system: "You are a helpful coding assistant.",
   messages: [
@@ -620,7 +620,7 @@ console.log(message.content[0].text);`,
             type: "list",
             style: "unordered",
             items: [
-              "**model**: Which Claude model to use (e.g., claude-sonnet-4-6-20250514)",
+              "**model**: Which Claude model to use (e.g., claude-sonnet-4-6)",
               "**max_tokens**: Maximum length of the response",
               "**system**: System prompt — persistent instructions for the AI's behavior",
               "**messages**: The conversation history — alternating user and assistant messages",

@@ -31,7 +31,7 @@ export async function sendPrompt(req: PromptRequest): Promise<PromptResponse> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       prompt: req.prompt,
-      model: req.model ?? "claude-sonnet-4-6-20250514",
+      model: req.model ?? "claude-sonnet-4-6",
       max_tokens: req.max_tokens ?? 4096,
     }),
   })

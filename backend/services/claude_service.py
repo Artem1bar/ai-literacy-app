@@ -7,7 +7,7 @@ client = AsyncAnthropic(api_key=settings.anthropic_api_key)
 
 async def send_message(
     prompt: str,
-    model: str = "claude-sonnet-4-6-20250514",
+    model: str = "claude-sonnet-4-6",
     max_tokens: int = 4096,
 ) -> dict:
     response = await client.messages.create(

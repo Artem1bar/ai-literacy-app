@@ -7,3 +7,21 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
+.gstack/
+.claire/
+.claude/worktrees/
+FETCH_HEAD
+
+# Python test artifacts
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Playwright
+/frontend/test-results/
+/frontend/playwright-report/
+/frontend/blob-report/
+/frontend/playwright/.cache/
+
+# QA visual snapshots (tooling output, not source)
+/frontend/.qa-visual/

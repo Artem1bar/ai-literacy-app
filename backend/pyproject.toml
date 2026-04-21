@@ -12,3 +12,23 @@ dependencies = [
     "slowapi>=0.1.9",
     "uvicorn>=0.42.0",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "unit: fast unit tests with no IO",
+    "integration: tests that exercise multiple components",
+]
+
+[tool.coverage.run]
+source = ["routers", "services"]
+omit = ["tests/*"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.1.0",
+]

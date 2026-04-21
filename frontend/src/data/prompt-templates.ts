@@ -321,7 +321,7 @@ Framework: {{framework}}
 
 Requirements:
 - Use the official Anthropic SDK (@anthropic-ai/sdk for TypeScript, anthropic for Python)
-- Model: claude-sonnet-4-6-20250514
+- Model: claude-sonnet-4-6
 - Include proper error handling (rate limits, timeouts, API errors)
 - Never hardcode API keys — use environment variables
 - Include TypeScript types / Python type hints

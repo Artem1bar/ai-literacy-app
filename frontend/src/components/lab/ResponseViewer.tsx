@@ -33,7 +33,7 @@ export function ResponseViewer({ response, isLoading, error }: ResponseViewerPro
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-xs gap-1">
               <Sparkles className="h-2.5 w-2.5" />
-              {response.model.replace("claude-", "").replace("-20250514", "")}
+              {response.model.replace("claude-", "").replace(/-\d{8}$/, "")}
             </Badge>
             <Badge variant="outline" className="text-xs">
               {response.usage.input_tokens + response.usage.output_tokens} tokens

@@ -12,7 +12,7 @@ router = APIRouter()
 
 class PromptRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=10000)
-    model: str = Field(default="claude-sonnet-4-6-20250514")
+    model: str = Field(default="claude-sonnet-4-6")
     max_tokens: int = Field(default=4096, ge=1, le=4096)
 
 
