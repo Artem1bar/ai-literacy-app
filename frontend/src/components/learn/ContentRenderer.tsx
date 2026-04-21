@@ -3,6 +3,7 @@ import { CheckCircle, XCircle, Info, AlertTriangle, Lightbulb, AlertCircle } fro
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useProgressStore } from "@/store/progressStore"
+import { RichText } from "@/components/learn/RichText"
 import type { ContentBlock } from "@/data/types"
 
 interface ContentRendererProps {
@@ -11,7 +12,7 @@ interface ContentRendererProps {
 
 export function ContentRenderer({ blocks }: ContentRendererProps) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-6 sm:space-y-5">
       {blocks.map((block, i) => (
         <BlockRenderer key={i} block={block} />
       ))}
@@ -51,22 +52,19 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
 
 function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading" }> }) {
   const classes = {
-    2: "text-2xl font-bold mt-8 mb-2 first:mt-0",
-    3: "text-lg font-semibold mt-6 mb-2",
-    4: "text-base font-semibold mt-4 mb-1",
+    2: "text-xl sm:text-2xl font-bold mt-10 mb-3 first:mt-0",
+    3: "text-lg sm:text-xl font-semibold mt-7 mb-2.5",
+    4: "text-base sm:text-lg font-semibold mt-5 mb-1.5",
   }
   const Tag = `h${block.level}` as "h2" | "h3" | "h4"
   return <Tag className={classes[block.level]}>{block.text}</Tag>
 }
 
 function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "paragraph" }> }) {
-  // Simple bold markdown inline: **text**
-  const html = block.text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
   return (
-    <p
-      className="text-muted-foreground leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <p className="text-[15px] sm:text-base leading-7 text-muted-foreground">
+      <RichText text={block.text} />
+    </p>
   )
 }
 
@@ -74,19 +72,14 @@ function ListBlock({ block }: { block: Extract<ContentBlock, { type: "list" }> }
   const Tag = block.style === "ordered" ? "ol" : "ul"
   return (
     <Tag className={cn(
-      "space-y-1.5 pl-5 text-muted-foreground",
+      "space-y-2 pl-5 text-[15px] sm:text-base leading-7 text-muted-foreground",
       block.style === "ordered" ? "list-decimal" : "list-disc",
     )}>
-      {block.items.map((item, i) => {
-        const html = item.replace(/\*\*(.+?)\*\*/g, "<strong class='text-foreground'>$1</strong>")
-        return (
-          <li
-            key={i}
-            className="leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        )
-      })}
+      {block.items.map((item, i) => (
+        <li key={i} className="leading-relaxed">
+          <RichText text={item} />
+        </li>
+      ))}
     </Tag>
   )
 }
@@ -105,6 +98,7 @@ function CodeBlock({ block }: { block: Extract<ContentBlock, { type: "code" }> }
       <div className="flex items-center justify-between bg-muted/50 px-4 py-2 border-b border-border">
         <span className="text-xs font-mono text-muted-foreground">{block.language}</span>
         <button
+          type="button"
           onClick={handleCopy}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Copy code"
@@ -113,7 +107,7 @@ function CodeBlock({ block }: { block: Extract<ContentBlock, { type: "code" }> }
         </button>
       </div>
       <pre className="overflow-x-auto p-4 bg-muted/20">
-        <code className="text-sm font-mono text-foreground">{block.code}</code>
+        <code className="text-xs sm:text-sm font-mono text-foreground">{block.code}</code>
       </pre>
       {block.caption && (
         <figcaption className="px-4 py-2 text-xs text-muted-foreground border-t border-border bg-muted/20">
@@ -170,6 +164,7 @@ function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }
           const showResult = submitted && isSelected
           return (
             <button
+            type="button"
               key={i}
               onClick={() => !submitted && setSelected(i)}
               disabled={submitted}
@@ -194,6 +189,7 @@ function QuizBlock({ block }: { block: Extract<ContentBlock, { type: "quiz" }> }
 
       {!submitted ? (
         <Button
+          type="button"
           size="sm"
           className="mt-4"
           onClick={handleSubmit}

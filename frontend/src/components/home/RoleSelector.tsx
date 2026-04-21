@@ -1,4 +1,4 @@
-import { GraduationCap, BookOpen, Code, CheckCircle } from "lucide-react"
+import { GraduationCap, BookOpen, Code, CheckCircle, HardHat } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { USER_ROLES } from "@/data/user-roles"
 import { useRole } from "@/hooks/useRole"
@@ -9,18 +9,21 @@ const ROLE_ICONS: Record<UserRole, React.ElementType> = {
   student: GraduationCap,
   professor: BookOpen,
   developer: Code,
+  worker: HardHat,
 }
 
 const ROLE_COLORS: Record<UserRole, string> = {
   student: "text-blue-500 bg-blue-500/10 group-hover:bg-blue-500/20",
   professor: "text-purple-500 bg-purple-500/10 group-hover:bg-purple-500/20",
   developer: "text-green-500 bg-green-500/10 group-hover:bg-green-500/20",
+  worker: "text-amber-500 bg-amber-500/10 group-hover:bg-amber-500/20",
 }
 
 const ROLE_BORDER_ACTIVE: Record<UserRole, string> = {
   student: "border-blue-500 ring-2 ring-blue-500/20",
   professor: "border-purple-500 ring-2 ring-purple-500/20",
   developer: "border-green-500 ring-2 ring-green-500/20",
+  worker: "border-amber-500 ring-2 ring-amber-500/20",
 }
 
 export function RoleSelector() {
@@ -35,13 +38,14 @@ export function RoleSelector() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
         {USER_ROLES.map((roleConfig) => {
           const Icon = ROLE_ICONS[roleConfig.id]
           const isSelected = role === roleConfig.id
 
           return (
             <button
+              type="button"
               key={roleConfig.id}
               onClick={() => setRole(roleConfig.id)}
               className="group text-left"
@@ -66,6 +70,7 @@ export function RoleSelector() {
                         roleConfig.id === "student" && "text-blue-500",
                         roleConfig.id === "professor" && "text-purple-500",
                         roleConfig.id === "developer" && "text-green-500",
+                        roleConfig.id === "worker" && "text-amber-500",
                       )} />
                     )}
                   </div>

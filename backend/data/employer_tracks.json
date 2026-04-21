@@ -1,0 +1,23 @@
+{
+  "_comment": "Employer partnership tracks (P5-T5). No UI surface in v1; loaded via backend/services/employer_service.py. Add tracks here; the reader auto-picks them up when status is 'active'.",
+  "tracks": [
+    {
+      "id": "aws-datacenter-ops-shreveport",
+      "employerId": "amazon-aws",
+      "name": "AWS Caddo/Bossier Data Center Ops",
+      "description": "Scaffold track for the AWS data-center operations cohort anchored in Shreveport and Bossier City. No UI surface in v1.",
+      "status": "draft",
+      "socCodes": ["15-1299", "49-9071", "47-2111"],
+      "moduleOverrides": []
+    },
+    {
+      "id": "meta-hyperion-richland",
+      "employerId": "meta-hyperion",
+      "name": "Meta Hyperion Readiness",
+      "description": "Scaffold track for Meta Hyperion hires in Richland Parish. No UI surface in v1.",
+      "status": "draft",
+      "socCodes": ["15-1252", "15-1299", "49-9071"],
+      "moduleOverrides": []
+    }
+  ]
+}

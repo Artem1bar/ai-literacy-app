@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router"
-import { Brain, Menu, GraduationCap, BookOpen, Code, X } from "lucide-react"
+import { Brain, Menu, GraduationCap, BookOpen, Code, X, HardHat } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,21 +16,27 @@ import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
   { label: "Learn", href: ROUTES.LEARN },
+  { label: "Occupations", href: ROUTES.OCCUPATIONS },
+  { label: "Megaprojects", href: ROUTES.MEGAPROJECTS },
   { label: "Prompt Lab", href: ROUTES.LAB },
+  { label: "Glossary", href: ROUTES.GLOSSARY },
   { label: "Resources", href: ROUTES.RESOURCES },
   { label: "Profile", href: ROUTES.PROFILE },
 ]
 
-const ROLE_ICONS = {
+const ROLE_ICONS: Record<string, typeof GraduationCap> = {
   student: GraduationCap,
   professor: BookOpen,
   developer: Code,
+  worker: HardHat,
 }
 
 export function Navbar() {
   const location = useLocation()
   const { role, roleConfig } = useRole()
   const [open, setOpen] = useState(false)
+  const isActiveLink = (href: string) =>
+    location.pathname === href || (href === ROUTES.LEARN && location.pathname.startsWith(`${ROUTES.LEARN}/`))
 
   const RoleIcon = role ? ROLE_ICONS[role] : null
 
@@ -52,10 +58,11 @@ export function Navbar() {
                 to={link.href}
                 className={cn(
                   "px-3 py-2 text-sm rounded-md transition-colors",
-                  location.pathname === link.href
+                  isActiveLink(link.href)
                     ? "bg-accent text-accent-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
                 )}
+                aria-current={isActiveLink(link.href) ? "page" : undefined}
               >
                 {link.label}
               </Link>
@@ -95,10 +102,11 @@ export function Navbar() {
                       onClick={() => setOpen(false)}
                       className={cn(
                         "px-3 py-2 text-sm rounded-md transition-colors",
-                        location.pathname === link.href
+                        isActiveLink(link.href)
                           ? "bg-accent text-accent-foreground font-medium"
                           : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
                       )}
+                      aria-current={isActiveLink(link.href) ? "page" : undefined}
                     >
                       {link.label}
                     </Link>

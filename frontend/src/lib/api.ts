@@ -154,3 +154,39 @@ export async function listOccupations(
     `/api/occupations${params.toString() ? `?${params.toString()}` : ""}`,
   )
 }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  Star Jobs (P5-T4)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export interface JobPosting {
+  postingId: string
+  title: string
+  employer: string
+  parish: string
+  city: string
+  socCode: string
+  postedAt: string
+  url: string
+  summary: string
+  salaryMin: number | null
+  salaryMax: number | null
+}
+
+export interface JobsResponse {
+  soc: string
+  parishId: string | null
+  stub: boolean
+  count: number
+  results: JobPosting[]
+}
+
+export async function fetchJobs(
+  soc: string,
+  parishId?: string | null,
+  limit = 10,
+): Promise<JobsResponse> {
+  const params = new URLSearchParams({ soc, limit: String(limit) })
+  if (parishId) params.set("parishId", parishId)
+  return apiGet<JobsResponse>(`/api/jobs?${params.toString()}`)
+}

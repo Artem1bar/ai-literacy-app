@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { UserCircle, Trophy, RotateCcw, GraduationCap, BookOpen, Code } from "lucide-react"
+import { UserCircle, Trophy, RotateCcw } from "lucide-react"
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -13,88 +13,43 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { ProgressBar } from "@/components/learn/ProgressBar"
+import { ProfileSummary } from "@/components/profile/ProfileSummary"
 import { MODULES } from "@/data/modules"
 import { useProgressStore } from "@/store/progressStore"
-import { useRole } from "@/hooks/useRole"
-import { cn } from "@/lib/utils"
-import type { UserRole } from "@/data/types"
-
-const ROLE_ICONS: Record<UserRole, React.ElementType> = {
-  student: GraduationCap,
-  professor: BookOpen,
-  developer: Code,
-}
-
-const ROLE_COLORS: Record<UserRole, string> = {
-  student: "text-blue-500",
-  professor: "text-purple-500",
-  developer: "text-green-500",
-}
+import { useProfile } from "@/hooks/useProfile"
 
 export default function Profile() {
-  const { role, roleConfig, setRole } = useRole()
-  const { completed, quizScores, getModuleProgress, resetProgress } = useProgressStore()
+  const { clearProfile } = useProfile()
+  const { completed, quizScores, getModuleProgress, resetProgress } =
+    useProgressStore()
   const [confirmReset, setConfirmReset] = useState(false)
 
   const totalSections = MODULES.reduce((s, m) => s + m.sections.length, 0)
-  const completedSections = Object.values(completed).reduce((s, arr) => s + arr.length, 0)
-  const overallProgress = totalSections > 0
-    ? Math.round((completedSections / totalSections) * 100)
-    : 0
+  const completedSections = Object.values(completed).reduce(
+    (s, arr) => s + arr.length,
+    0,
+  )
+  const overallProgress =
+    totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0
 
   const quizTotal = Object.keys(quizScores).length
   const quizCorrect = Object.values(quizScores).filter((s) => s === 1).length
 
-  const RoleIcon = role ? ROLE_ICONS[role] : null
-
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-8">
-        <UserCircle className="h-5 w-5 text-primary" />
-        <h1 className="text-3xl font-bold">Profile</h1>
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mb-8 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <UserCircle className="h-5 w-5 text-primary" />
+          <h1 className="text-3xl font-bold">Profile</h1>
+        </div>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/onboarding">Run onboarding</Link>
+        </Button>
       </div>
 
-      {/* Role card */}
-      <Card className="mb-6">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-3">
-              {RoleIcon && role && (
-                <div className="rounded-lg bg-muted p-2.5">
-                  <RoleIcon className={cn("h-5 w-5", ROLE_COLORS[role])} />
-                </div>
-              )}
-              <div>
-                <p className="text-xs text-muted-foreground mb-0.5">Current role</p>
-                <p className="font-semibold">
-                  {roleConfig?.label ?? "No role selected"}
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {(["student", "professor", "developer"] as UserRole[]).map((r) => {
-                const Icon = ROLE_ICONS[r]
-                return (
-                  <button
-                    key={r}
-                    onClick={() => setRole(r)}
-                    aria-pressed={role === r}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-all",
-                      role === r
-                        ? "border-primary bg-primary/10 font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:border-primary/40",
-                    )}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    <span className="capitalize">{r}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mb-8">
+        <ProfileSummary />
+      </div>
 
       {/* Overall progress */}
       <Card className="mb-6">
@@ -104,19 +59,23 @@ export default function Profile() {
             <h2 className="font-semibold">Overall Progress</h2>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 space-y-4">
+        <CardContent className="space-y-4 pt-0">
           <ProgressBar value={overallProgress} label="All modules" />
           <div className="flex gap-4 text-sm text-muted-foreground">
-            <span>{completedSections} / {totalSections} sections completed</span>
+            <span>
+              {completedSections} / {totalSections} sections completed
+            </span>
             {quizTotal > 0 && (
-              <span>{quizCorrect} / {quizTotal} quizzes correct</span>
+              <span>
+                {quizCorrect} / {quizTotal} quizzes correct
+              </span>
             )}
           </div>
         </CardContent>
       </Card>
 
       {/* Per-module progress */}
-      <div className="space-y-3 mb-8">
+      <div className="mb-8 space-y-3">
         <h2 className="font-semibold">Module Progress</h2>
         {MODULES.map((module) => {
           const progress = getModuleProgress(module.id, module.sections.length)
@@ -124,14 +83,17 @@ export default function Profile() {
           return (
             <Card key={module.id}>
               <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <Link
                     to={`/learn/${module.slug}`}
-                    className="text-sm font-medium hover:text-primary transition-colors"
+                    className="text-sm font-medium transition-colors hover:text-primary"
                   >
                     {module.title}
                   </Link>
-                  <Badge variant={progress === 100 ? "default" : "secondary"} className="text-xs">
+                  <Badge
+                    variant={progress === 100 ? "default" : "secondary"}
+                    className="text-xs"
+                  >
                     {done.length}/{module.sections.length}
                   </Badge>
                 </div>
@@ -143,7 +105,7 @@ export default function Profile() {
       </div>
 
       {/* Reset */}
-      <div className="border-t border-border pt-6">
+      <div className="flex flex-wrap gap-2 border-t border-border pt-6">
         <Button
           variant="outline"
           size="sm"
@@ -151,7 +113,15 @@ export default function Profile() {
           className="gap-1.5 text-destructive hover:text-destructive"
         >
           <RotateCcw className="h-3.5 w-3.5" />
-          Reset All Progress
+          Reset progress
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={clearProfile}
+          className="gap-1.5 text-muted-foreground"
+        >
+          Clear profile
         </Button>
       </div>
 
@@ -160,7 +130,8 @@ export default function Profile() {
           <DialogHeader>
             <DialogTitle>Reset progress?</DialogTitle>
             <DialogDescription>
-              This will clear all completed sections and quiz scores. This cannot be undone.
+              This will clear all completed sections and quiz scores. Your profile
+              (role, SOC, parish, etc.) is unaffected. This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
