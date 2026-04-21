@@ -1,0 +1,237 @@
+{
+  "code": "29-2061",
+  "title": "Licensed Practical and Licensed Vocational Nurses",
+  "jobFamily": "Healthcare Practitioners",
+  "laEmployment": 16000,
+  "laMedianWage": 50100,
+  "rlmaDistribution": {
+    "RLMA-1": 22,
+    "RLMA-2": 18,
+    "RLMA-4": 14,
+    "RLMA-7": 14,
+    "RLMA-8": 12,
+    "RLMA-6": 10,
+    "RLMA-3": 6,
+    "RLMA-5": 4
+  },
+  "relatedSOCs": [
+    "29-1141",
+    "31-1131"
+  ],
+  "typicalEmployerIds": [
+    "ochsner",
+    "lcmc-health",
+    "lsu-health",
+    "willis-knighton"
+  ],
+  "sectorIds": [
+    "healthcare"
+  ],
+  "scoreCard": {
+    "exposure": {
+      "value": 38.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "eloundou-2024",
+        "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+        "url": "https://arxiv.org/abs/2303.10130",
+        "asOf": "2024"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "augmentation": {
+      "value": 30.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "replacement": {
+      "value": 6.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "wagePremium": {
+      "value": 16.0,
+      "confidence": "low",
+      "source": {
+        "sourceId": "pwc-ai-jobs-barometer-2025",
+        "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+        "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21",
+      "note": "National PwC baseline (56%) adjusted down for non-tech occupations; up for high-leverage roles."
+    }
+  },
+  "skillBundle": {
+    "technical": [
+      {
+        "id": "29-2061:tech-prompting-basics",
+        "title": "Structured prompting with role, task, context, format",
+        "summary": "Compose prompts that specify the assistant's role, the task, relevant context, and the expected output format. Claude-specific: use <context>/<task>/<format> XML tags for complex requests.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "prompt-engineering"
+      },
+      {
+        "id": "29-2061:tech-context-windows",
+        "title": "Reason about context windows and token budgets",
+        "summary": "Understand when a request is too long, when to chunk, and how to use retrieval instead of jamming everything into context.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "context-window"
+      },
+      {
+        "id": "29-2061:tech-hc-ambient-documentation",
+        "title": "Operate ambient documentation and charting assistants",
+        "summary": "Use AI scribes (Nuance DAX, Abridge, Suki) to generate clinical notes from encounters. Always review before signing.",
+        "dimension": "technical",
+        "priority": "core"
+      }
+    ],
+    "critical": [
+      {
+        "id": "29-2061:crit-hallucination-check",
+        "title": "Detect and verify claims that sound confident but may be hallucinated",
+        "summary": "Cross-check specific numbers, quotes, and citations against primary sources. Treat unverified facts as a red flag.",
+        "dimension": "critical",
+        "priority": "core",
+        "glossarySlug": "hallucination"
+      },
+      {
+        "id": "29-2061:crit-uncertainty-tolerance",
+        "title": "Ask for confidence and act accordingly",
+        "summary": "Prompt for explicit uncertainty signals and treat hedged AI output as hedged — don't collapse it into a single certain answer.",
+        "dimension": "critical",
+        "priority": "supporting",
+        "glossarySlug": "critical-literacy"
+      },
+      {
+        "id": "29-2061:crit-hc-diagnostic",
+        "title": "Treat AI diagnostic suggestions as differentials, not decisions",
+        "summary": "AI-surfaced differentials broaden thinking; they do not replace clinical judgment or protocol.",
+        "dimension": "critical",
+        "priority": "core"
+      }
+    ],
+    "ethical": [
+      {
+        "id": "29-2061:eth-data-governance",
+        "title": "Respect data-sharing boundaries",
+        "summary": "Know what you can and cannot paste into a third-party AI tool. Default to anonymising PII, PHI, and proprietary data.",
+        "dimension": "ethical",
+        "priority": "core",
+        "glossarySlug": "ethical-literacy"
+      },
+      {
+        "id": "29-2061:eth-bias-awareness",
+        "title": "Recognise and counter training-data bias",
+        "summary": "Ask the model to consider alternative perspectives and to flag when its training data may be incomplete or skewed.",
+        "dimension": "ethical",
+        "priority": "supporting"
+      },
+      {
+        "id": "29-2061:eth-hc-hipaa",
+        "title": "HIPAA-compliant AI use",
+        "summary": "Route every PHI-containing workflow through an enterprise agreement that covers BAA. Never paste PHI into a consumer AI tool.",
+        "dimension": "ethical",
+        "priority": "core"
+      }
+    ],
+    "domainSpecific": [
+      {
+        "id": "29-2061:dom-hc-charting-workflow",
+        "title": "Integrate charting AI into Epic/Cerner workflows",
+        "summary": "Understand the specific LSU Health / Ochsner / LCMC deployment model and how AI fits the shift hand-off.",
+        "dimension": "domain-specific",
+        "priority": "core"
+      }
+    ]
+  },
+  "learningPath": {
+    "socCode": "29-2061",
+    "recommendedModules": [
+      {
+        "moduleId": "ai-fundamentals",
+        "order": 1,
+        "rationale": "Ground how LLMs actually generate text before trusting them at work.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "prompt-engineering",
+        "order": 2,
+        "rationale": "Structured prompting is the highest-leverage skill for anyone using AI.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "responsible-ai",
+        "order": 3,
+        "rationale": "Hallucinations, bias, and data-handling rules matter in every regulated workplace.",
+        "covers": [
+          "critical",
+          "ethical"
+        ]
+      },
+      {
+        "moduleId": "practical-workflows",
+        "order": 4,
+        "rationale": "Translate the fundamentals into role-specific day-to-day workflows.",
+        "covers": [
+          "domain-specific"
+        ]
+      }
+    ],
+    "supplementalResources": [],
+    "estimatedTotalMinutes": 105,
+    "milestones": []
+  },
+  "summary": "Provide routine patient care under the direction of RNs or physicians — core of rural Louisiana healthcare delivery.",
+  "sourceCitations": [
+    {
+      "sourceId": "eloundou-2024",
+      "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+      "url": "https://arxiv.org/abs/2303.10130",
+      "asOf": "2024"
+    },
+    {
+      "sourceId": "anthropic-economic-index-2025",
+      "label": "Anthropic Economic Index 2025",
+      "url": "https://www.anthropic.com/research/economic-index",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "pwc-ai-jobs-barometer-2025",
+      "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+      "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "bls-oews-la-2025",
+      "label": "BLS OEWS Louisiana, 2025 release",
+      "url": "https://www.bls.gov/oes/current/oes_la.htm",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "onet-28",
+      "label": "O*NET 28.0",
+      "url": "https://www.onetonline.org/",
+      "asOf": "2024"
+    }
+  ],
+  "lastReviewed": "2026-04-21"
+}

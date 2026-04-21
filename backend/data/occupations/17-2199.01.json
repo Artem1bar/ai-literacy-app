@@ -1,0 +1,246 @@
+{
+  "code": "17-2199.01",
+  "title": "Robotics Engineers",
+  "jobFamily": "Engineering",
+  "laEmployment": 1200,
+  "laMedianWage": 104500,
+  "rlmaDistribution": {
+    "RLMA-1": 28,
+    "RLMA-2": 22,
+    "RLMA-5": 14,
+    "RLMA-7": 22,
+    "RLMA-8": 10,
+    "RLMA-4": 4
+  },
+  "relatedSOCs": [
+    "17-2141",
+    "17-2112",
+    "15-1252"
+  ],
+  "typicalEmployerIds": [
+    "sse-persona-ai",
+    "meta-hyperion",
+    "amazon-aws",
+    "hyundai-steel"
+  ],
+  "sectorIds": [
+    "manufacturing",
+    "technology"
+  ],
+  "scoreCard": {
+    "exposure": {
+      "value": 68.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "eloundou-2024",
+        "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+        "url": "https://arxiv.org/abs/2303.10130",
+        "asOf": "2024"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "augmentation": {
+      "value": 44.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "replacement": {
+      "value": 18.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "wagePremium": {
+      "value": 62.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "pwc-ai-jobs-barometer-2025",
+        "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+        "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21",
+      "note": "National PwC baseline (56%) adjusted down for non-tech occupations; up for high-leverage roles."
+    }
+  },
+  "skillBundle": {
+    "technical": [
+      {
+        "id": "17-2199.01:tech-prompting-basics",
+        "title": "Structured prompting with role, task, context, format",
+        "summary": "Compose prompts that specify the assistant's role, the task, relevant context, and the expected output format. Claude-specific: use <context>/<task>/<format> XML tags for complex requests.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "prompt-engineering"
+      },
+      {
+        "id": "17-2199.01:tech-context-windows",
+        "title": "Reason about context windows and token budgets",
+        "summary": "Understand when a request is too long, when to chunk, and how to use retrieval instead of jamming everything into context.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "context-window"
+      },
+      {
+        "id": "17-2199.01:tech-mfg-robot-interfaces",
+        "title": "Instruct humanoid and cobot systems via natural-language intent",
+        "summary": "Structure robot task descriptions so downstream planners can execute; understand vision-language action loops.",
+        "dimension": "technical",
+        "priority": "core"
+      }
+    ],
+    "critical": [
+      {
+        "id": "17-2199.01:crit-hallucination-check",
+        "title": "Detect and verify claims that sound confident but may be hallucinated",
+        "summary": "Cross-check specific numbers, quotes, and citations against primary sources. Treat unverified facts as a red flag.",
+        "dimension": "critical",
+        "priority": "core",
+        "glossarySlug": "hallucination"
+      },
+      {
+        "id": "17-2199.01:crit-uncertainty-tolerance",
+        "title": "Ask for confidence and act accordingly",
+        "summary": "Prompt for explicit uncertainty signals and treat hedged AI output as hedged — don't collapse it into a single certain answer.",
+        "dimension": "critical",
+        "priority": "supporting",
+        "glossarySlug": "critical-literacy"
+      },
+      {
+        "id": "17-2199.01:crit-mfg-quality",
+        "title": "Double-check AI-assisted QC decisions against a physical sample",
+        "summary": "Vision-AI is precise but can be wrong at the tails of a distribution. Sample-check every shift.",
+        "dimension": "critical",
+        "priority": "core"
+      }
+    ],
+    "ethical": [
+      {
+        "id": "17-2199.01:eth-data-governance",
+        "title": "Respect data-sharing boundaries",
+        "summary": "Know what you can and cannot paste into a third-party AI tool. Default to anonymising PII, PHI, and proprietary data.",
+        "dimension": "ethical",
+        "priority": "core",
+        "glossarySlug": "ethical-literacy"
+      },
+      {
+        "id": "17-2199.01:eth-bias-awareness",
+        "title": "Recognise and counter training-data bias",
+        "summary": "Ask the model to consider alternative perspectives and to flag when its training data may be incomplete or skewed.",
+        "dimension": "ethical",
+        "priority": "supporting"
+      },
+      {
+        "id": "17-2199.01:eth-mfg-displacement",
+        "title": "Transparent communication about automation scope",
+        "summary": "When new robots are deployed, communicate which roles are being augmented vs replaced, and document retraining commitments.",
+        "dimension": "ethical",
+        "priority": "core"
+      }
+    ],
+    "domainSpecific": [
+      {
+        "id": "17-2199.01:dom-mfg-weld-inspection",
+        "title": "AI-assisted weld inspection workflow",
+        "summary": "Interpret vision-model defect classifications, calibrate false-positive rates, and pair with destructive-test sampling.",
+        "dimension": "domain-specific",
+        "priority": "core"
+      }
+    ]
+  },
+  "learningPath": {
+    "socCode": "17-2199.01",
+    "recommendedModules": [
+      {
+        "moduleId": "ai-fundamentals",
+        "order": 1,
+        "rationale": "Ground how LLMs actually generate text before trusting them at work.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "prompt-engineering",
+        "order": 2,
+        "rationale": "Structured prompting is the highest-leverage skill for anyone using AI.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "claude-workflows",
+        "order": 3,
+        "rationale": "Master Claude Code, the Claude API, and MCP — the practitioner core.",
+        "covers": [
+          "technical",
+          "domain-specific"
+        ]
+      },
+      {
+        "moduleId": "responsible-ai",
+        "order": 4,
+        "rationale": "Ship safely: license drift, secret handling, and code-review discipline.",
+        "covers": [
+          "critical",
+          "ethical"
+        ]
+      },
+      {
+        "moduleId": "practical-workflows",
+        "order": 5,
+        "rationale": "Developer-specific patterns around system prompts and agentic workflows.",
+        "covers": [
+          "domain-specific"
+        ]
+      }
+    ],
+    "supplementalResources": [],
+    "estimatedTotalMinutes": 135,
+    "milestones": []
+  },
+  "summary": "Design, test, and supervise robotic systems. Directly targeted by the SSE Steel / Persona AI humanoid pilot and by automation across ports and manufacturing.",
+  "sourceCitations": [
+    {
+      "sourceId": "eloundou-2024",
+      "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+      "url": "https://arxiv.org/abs/2303.10130",
+      "asOf": "2024"
+    },
+    {
+      "sourceId": "anthropic-economic-index-2025",
+      "label": "Anthropic Economic Index 2025",
+      "url": "https://www.anthropic.com/research/economic-index",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "pwc-ai-jobs-barometer-2025",
+      "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+      "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "bls-oews-la-2025",
+      "label": "BLS OEWS Louisiana, 2025 release",
+      "url": "https://www.bls.gov/oes/current/oes_la.htm",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "onet-28",
+      "label": "O*NET 28.0",
+      "url": "https://www.onetonline.org/",
+      "asOf": "2024"
+    }
+  ],
+  "lastReviewed": "2026-04-21"
+}

@@ -1,0 +1,232 @@
+{
+  "code": "43-6011",
+  "title": "Executive Secretaries and Administrative Assistants",
+  "jobFamily": "Office & Admin",
+  "laEmployment": 5500,
+  "laMedianWage": 58300,
+  "rlmaDistribution": {
+    "RLMA-1": 28,
+    "RLMA-2": 24,
+    "RLMA-7": 14,
+    "RLMA-4": 10,
+    "RLMA-8": 8,
+    "RLMA-5": 7,
+    "RLMA-3": 5,
+    "RLMA-6": 4
+  },
+  "relatedSOCs": [
+    "43-4051",
+    "11-1021"
+  ],
+  "typicalEmployerIds": [],
+  "sectorIds": [
+    "public-administration"
+  ],
+  "scoreCard": {
+    "exposure": {
+      "value": 82.0,
+      "confidence": "high",
+      "source": {
+        "sourceId": "eloundou-2024",
+        "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+        "url": "https://arxiv.org/abs/2303.10130",
+        "asOf": "2024"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "augmentation": {
+      "value": 58.0,
+      "confidence": "high",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "replacement": {
+      "value": 22.0,
+      "confidence": "high",
+      "source": {
+        "sourceId": "anthropic-economic-index-2025",
+        "label": "Anthropic Economic Index 2025",
+        "url": "https://www.anthropic.com/research/economic-index",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21"
+    },
+    "wagePremium": {
+      "value": 32.0,
+      "confidence": "medium",
+      "source": {
+        "sourceId": "pwc-ai-jobs-barometer-2025",
+        "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+        "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+        "asOf": "2025"
+      },
+      "lastComputed": "2026-04-21",
+      "note": "National PwC baseline (56%) adjusted down for non-tech occupations; up for high-leverage roles."
+    }
+  },
+  "skillBundle": {
+    "technical": [
+      {
+        "id": "43-6011:tech-prompting-basics",
+        "title": "Structured prompting with role, task, context, format",
+        "summary": "Compose prompts that specify the assistant's role, the task, relevant context, and the expected output format. Claude-specific: use <context>/<task>/<format> XML tags for complex requests.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "prompt-engineering"
+      },
+      {
+        "id": "43-6011:tech-context-windows",
+        "title": "Reason about context windows and token budgets",
+        "summary": "Understand when a request is too long, when to chunk, and how to use retrieval instead of jamming everything into context.",
+        "dimension": "technical",
+        "priority": "core",
+        "glossarySlug": "context-window"
+      },
+      {
+        "id": "43-6011:tech-pa-public-data",
+        "title": "Use AI to summarise policy and regulation",
+        "summary": "Municipal / parish administrators can summarise long regulatory texts quickly with AI — always link to the authoritative source.",
+        "dimension": "technical",
+        "priority": "core"
+      }
+    ],
+    "critical": [
+      {
+        "id": "43-6011:crit-hallucination-check",
+        "title": "Detect and verify claims that sound confident but may be hallucinated",
+        "summary": "Cross-check specific numbers, quotes, and citations against primary sources. Treat unverified facts as a red flag.",
+        "dimension": "critical",
+        "priority": "core",
+        "glossarySlug": "hallucination"
+      },
+      {
+        "id": "43-6011:crit-uncertainty-tolerance",
+        "title": "Ask for confidence and act accordingly",
+        "summary": "Prompt for explicit uncertainty signals and treat hedged AI output as hedged — don't collapse it into a single certain answer.",
+        "dimension": "critical",
+        "priority": "supporting",
+        "glossarySlug": "critical-literacy"
+      },
+      {
+        "id": "43-6011:crit-pa-constituent",
+        "title": "AI must not be the final voice to constituents",
+        "summary": "A public servant remains accountable. AI drafts, humans sign.",
+        "dimension": "critical",
+        "priority": "core"
+      }
+    ],
+    "ethical": [
+      {
+        "id": "43-6011:eth-data-governance",
+        "title": "Respect data-sharing boundaries",
+        "summary": "Know what you can and cannot paste into a third-party AI tool. Default to anonymising PII, PHI, and proprietary data.",
+        "dimension": "ethical",
+        "priority": "core",
+        "glossarySlug": "ethical-literacy"
+      },
+      {
+        "id": "43-6011:eth-bias-awareness",
+        "title": "Recognise and counter training-data bias",
+        "summary": "Ask the model to consider alternative perspectives and to flag when its training data may be incomplete or skewed.",
+        "dimension": "ethical",
+        "priority": "supporting"
+      },
+      {
+        "id": "43-6011:eth-pa-transparency",
+        "title": "Disclose AI use in public-sector deliverables",
+        "summary": "Public trust requires transparency about when and how AI was used.",
+        "dimension": "ethical",
+        "priority": "core"
+      }
+    ],
+    "domainSpecific": [
+      {
+        "id": "43-6011:dom-pa-casework",
+        "title": "Casework and constituent-communication AI",
+        "summary": "Many LA parish and state offices are piloting AI summarisation of casework; learn the deployed tool.",
+        "dimension": "domain-specific",
+        "priority": "core"
+      }
+    ]
+  },
+  "learningPath": {
+    "socCode": "43-6011",
+    "recommendedModules": [
+      {
+        "moduleId": "ai-fundamentals",
+        "order": 1,
+        "rationale": "Ground how LLMs actually generate text before trusting them at work.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "prompt-engineering",
+        "order": 2,
+        "rationale": "Structured prompting is the highest-leverage skill for anyone using AI.",
+        "covers": [
+          "technical"
+        ]
+      },
+      {
+        "moduleId": "responsible-ai",
+        "order": 3,
+        "rationale": "Hallucinations, bias, and data-handling rules matter in every regulated workplace.",
+        "covers": [
+          "critical",
+          "ethical"
+        ]
+      },
+      {
+        "moduleId": "practical-workflows",
+        "order": 4,
+        "rationale": "Translate the fundamentals into role-specific day-to-day workflows.",
+        "covers": [
+          "domain-specific"
+        ]
+      }
+    ],
+    "supplementalResources": [],
+    "estimatedTotalMinutes": 105,
+    "milestones": []
+  },
+  "summary": "Provide high-level clerical and administrative support. Scheduling, summarising, and drafting are the classical augmentation cases.",
+  "sourceCitations": [
+    {
+      "sourceId": "eloundou-2024",
+      "label": "Eloundou et al. 2024, Appendix B (task-level exposure aggregated to SOC)",
+      "url": "https://arxiv.org/abs/2303.10130",
+      "asOf": "2024"
+    },
+    {
+      "sourceId": "anthropic-economic-index-2025",
+      "label": "Anthropic Economic Index 2025",
+      "url": "https://www.anthropic.com/research/economic-index",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "pwc-ai-jobs-barometer-2025",
+      "label": "PwC AI Jobs Barometer 2024/2025 + BLS OEWS LA 2025 spread",
+      "url": "https://www.pwc.com/gx/en/issues/artificial-intelligence/ai-jobs-barometer.html",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "bls-oews-la-2025",
+      "label": "BLS OEWS Louisiana, 2025 release",
+      "url": "https://www.bls.gov/oes/current/oes_la.htm",
+      "asOf": "2025"
+    },
+    {
+      "sourceId": "onet-28",
+      "label": "O*NET 28.0",
+      "url": "https://www.onetonline.org/",
+      "asOf": "2024"
+    }
+  ],
+  "lastReviewed": "2026-04-21"
+}
