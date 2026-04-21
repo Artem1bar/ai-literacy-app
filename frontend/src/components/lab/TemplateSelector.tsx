@@ -43,6 +43,7 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
                 {templates.map((t) => (
                   <button
+                    type="button"
                     key={t.id}
                     onClick={() => onSelect(t)}
                     className={cn(

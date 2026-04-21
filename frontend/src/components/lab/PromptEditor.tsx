@@ -34,10 +34,10 @@ export function PromptEditor({ value, onChange, onSubmit, onClear, isLoading }: 
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKey}
         placeholder="Write your prompt here, or select a template above..."
-        className="min-h-[260px] font-mono text-sm resize-y"
+        className="min-h-[220px] sm:min-h-[260px] font-mono text-sm resize-y"
         disabled={isLoading}
       />
-      <div className="flex gap-2 justify-end">
+      <div className="sticky bottom-2 z-10 flex justify-end gap-2 rounded-lg border border-border bg-background/95 p-2 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <Button
           variant="outline"
           size="sm"

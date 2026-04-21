@@ -45,25 +45,28 @@ export default function Resources() {
         and GitHub repositories.
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-4">
         <Tabs value={category} onValueChange={(v) => setCategory(v as ResourceCategory | "all")}>
-          <TabsList className="flex-wrap h-auto gap-1">
+          <TabsList className="h-auto w-full gap-1 overflow-x-auto whitespace-nowrap sm:w-fit">
             {CATEGORIES.filter((c) => RESOURCES.some((r) => c === "all" || r.category === c)).map((c) => (
-              <TabsTrigger key={c} value={c} className="text-xs">
+              <TabsTrigger key={c} value={c} className="text-xs shrink-0">
                 {CATEGORY_LABELS[c]}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
-        <Input
-          placeholder="Search resources..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="sm:w-64 text-sm"
-        />
+        <div className="flex items-center justify-between gap-3">
+          <Input
+            placeholder="Search resources..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full sm:w-64 text-sm"
+          />
+          <p className="shrink-0 text-xs text-muted-foreground">{filtered.length} results</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((resource) => (
           <a
             key={resource.id}
@@ -73,22 +76,22 @@ export default function Resources() {
             className="group block"
           >
             <Card className="h-full transition-all hover:shadow-md hover:border-primary/40 cursor-pointer">
-              <CardContent className="p-4">
+              <CardContent className="p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-sm font-semibold leading-snug group-hover:text-primary transition-colors">
+                  <h3 className="text-sm sm:text-base font-semibold leading-snug group-hover:text-primary transition-colors">
                     {resource.title}
                   </h3>
                   <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground mt-0.5" />
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">
                   {resource.description}
                 </p>
-                <div className="flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="text-[10px]">
+                <div className="flex flex-wrap gap-1.5">
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
                     {CATEGORY_LABELS[resource.category]}
                   </Badge>
                   {resource.tags.slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-[10px]">
+                    <Badge key={tag} variant="outline" className="hidden sm:inline-flex text-[10px]">
                       {tag}
                     </Badge>
                   ))}

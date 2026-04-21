@@ -23,16 +23,8 @@ export default function Module() {
   const [activeSectionId, setActiveSectionId] = useState<string>("")
   const sectionRefs = useRef<Record<string, HTMLElement>>({})
 
-  if (!module) return <Navigate to="/learn" replace />
-
-  const progress = getModuleProgress(module.id, module.sections.length)
-  const currentIndex = module.sections.findIndex((s) => s.id === activeSectionId)
-  const prevSection = currentIndex > 0 ? module.sections[currentIndex - 1] : null
-  const nextSection = currentIndex < module.sections.length - 1 ? module.sections[currentIndex + 1] : null
-
-  // Scroll-spy
   useEffect(() => {
-    if (module.sections.length > 0) setActiveSectionId(module.sections[0].id)
+    if (!module) return
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting)
@@ -45,6 +37,14 @@ export default function Module() {
     Object.values(sectionRefs.current).forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [module])
+
+  if (!module) return <Navigate to="/learn" replace />
+
+  const effectiveActiveSectionId = activeSectionId || module.sections[0]?.id || ""
+  const progress = getModuleProgress(module.id, module.sections.length)
+  const currentIndex = module.sections.findIndex((s) => s.id === effectiveActiveSectionId)
+  const prevSection = currentIndex > 0 ? module.sections[currentIndex - 1] : null
+  const nextSection = currentIndex < module.sections.length - 1 ? module.sections[currentIndex + 1] : null
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -87,7 +87,7 @@ export default function Module() {
       <div className="flex gap-10">
         {/* Sidebar (desktop) */}
         <div className="hidden lg:block">
-          <Sidebar module={module} activeSectionId={activeSectionId} />
+          <Sidebar module={module} activeSectionId={effectiveActiveSectionId} />
         </div>
 
         {/* Content */}
@@ -108,11 +108,13 @@ export default function Module() {
                 {/* Section completion */}
                 <div className="flex items-center justify-between">
                   <button
+                    type="button"
                     onClick={() =>
                       isDone
                         ? markSectionIncomplete(module.id, section.id)
                         : markSectionComplete(module.id, section.id)
                     }
+                    aria-pressed={isDone}
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {isDone ? (
