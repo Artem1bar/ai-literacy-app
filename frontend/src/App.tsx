@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react"
 import { Routes, Route } from "react-router"
+import { Analytics } from "@vercel/analytics/react"
 import { RootLayout } from "@/components/layout/RootLayout"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
@@ -29,16 +30,19 @@ function Page({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<RootLayout />}>
-        <Route path="/" element={<Page><Home /></Page>} />
-        <Route path="/learn" element={<Page><Learn /></Page>} />
-        <Route path="/learn/:slug" element={<Page><Module /></Page>} />
-        <Route path="/lab" element={<Page><Lab /></Page>} />
-        <Route path="/resources" element={<Page><Resources /></Page>} />
-        <Route path="/profile" element={<Page><Profile /></Page>} />
-        <Route path="*" element={<Page><NotFound /></Page>} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route path="/" element={<Page><Home /></Page>} />
+          <Route path="/learn" element={<Page><Learn /></Page>} />
+          <Route path="/learn/:slug" element={<Page><Module /></Page>} />
+          <Route path="/lab" element={<Page><Lab /></Page>} />
+          <Route path="/resources" element={<Page><Resources /></Page>} />
+          <Route path="/profile" element={<Page><Profile /></Page>} />
+          <Route path="*" element={<Page><NotFound /></Page>} />
+        </Route>
+      </Routes>
+      <Analytics />
+    </>
   )
 }
