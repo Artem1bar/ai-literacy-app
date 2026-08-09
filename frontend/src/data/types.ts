@@ -76,6 +76,12 @@ export interface Section {
   readonly blocks: readonly ContentBlock[]
 }
 
+export interface LabChallenge {
+  readonly title: string
+  readonly brief: string
+  readonly starterPrompt: string
+}
+
 export interface Module {
   readonly id: string
   readonly slug: string
@@ -86,6 +92,7 @@ export interface Module {
   readonly estimatedMinutes: number
   readonly prerequisites: readonly string[]
   readonly sections: readonly Section[]
+  readonly labChallenge?: LabChallenge
 }
 
 export interface TemplatePlaceholder {

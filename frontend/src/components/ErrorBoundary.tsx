@@ -20,7 +20,10 @@ export class ErrorBoundary extends Component<Props, State> {
   static getDerivedStateFromError(error: unknown): State {
     return {
       hasError: true,
-      message: error instanceof Error ? error.message : "An unexpected error occurred.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something unexpected happened on our side.",
     }
   }
 
@@ -31,10 +34,12 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="rounded-full bg-destructive/10 p-4 mb-4">
             <AlertTriangle className="h-8 w-8 text-destructive" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
-          <p className="text-muted-foreground text-sm mb-6 max-w-sm">{this.state.message}</p>
+          <h2 className="text-xl font-semibold mb-2">That didn't go as planned</h2>
+          <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
+            {this.state.message}
+          </p>
           <Button onClick={() => this.setState({ hasError: false, message: "" })}>
-            Try again
+            Try it again
           </Button>
         </div>
       )

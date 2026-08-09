@@ -32,24 +32,26 @@ function scorePrompt(prompt: string): PromptScore {
   const len = prompt.trim().length
   const lenScore = len < 20 ? 1 : len < 80 ? 2 : len < 200 ? 3 : len < 500 ? 4 : 5
   breakdown.push({
-    label: "Detail & length",
+    label: "Detail",
     score: lenScore,
     max: 5,
     note:
       len < 80
-        ? "Too brief — add context or constraints"
+        ? "Very short — Claude has almost nothing to work with"
         : len > 3000
-          ? "Very long — consider trimming"
-          : "Good length",
+          ? "Quite long — check whether every sentence is earning its place"
+          : "A reasonable amount of detail",
   })
 
   // Role instruction (0-3 pts)
   const hasRole = /you are|act as|as an?|role:/i.test(prompt)
   breakdown.push({
-    label: "Role instruction",
+    label: "Role framing",
     score: hasRole ? 3 : 0,
     max: 3,
-    note: hasRole ? "Has role instruction" : 'Consider adding "You are a ..." instruction',
+    note: hasRole
+      ? "Frames Claude in a specific role"
+      : 'Try adding a "You are…" line to set the perspective',
   })
 
   // Format specification (0-3 pts)
@@ -62,36 +64,36 @@ function scorePrompt(prompt: string): PromptScore {
     score: hasFormat ? 3 : 0,
     max: 3,
     note: hasFormat
-      ? "Specifies output format"
-      : "Consider specifying how the response should be formatted",
+      ? "You've told Claude what shape you want back"
+      : "Say how the answer should be structured — list, table, sections, something else",
   })
 
   // Specificity (0-4 pts)
   const hasConstraints = /must|should|only|no more than|at least|maximum|minimum|avoid|don't|do not/i.test(prompt)
   const hasContext = /context|background|because|given that|situation/i.test(prompt)
   breakdown.push({
-    label: "Specificity & constraints",
+    label: "Constraints & context",
     score: (hasConstraints ? 2 : 0) + (hasContext ? 2 : 0),
     max: 4,
     note: [
-      !hasConstraints && "Add constraints (e.g. length, scope)",
-      !hasContext && "Add background context",
+      !hasConstraints && "Add limits — length, scope, things to avoid",
+      !hasContext && "Set the scene — why you're asking, what's already true",
     ]
       .filter(Boolean)
-      .join("; ") || "Clear constraints and context",
+      .join(" · ") || "Both the background and the boundaries are in place",
   })
 
   // XML structure (0-5 pts)
   const xmlTagCount = (prompt.match(/<[a-z_]+>/g) ?? []).length
   const xmlScore = xmlTagCount === 0 ? 0 : xmlTagCount < 2 ? 2 : xmlTagCount < 4 ? 3 : 5
   breakdown.push({
-    label: "Structure (XML tags)",
+    label: "Structure",
     score: xmlScore,
     max: 5,
     note:
       xmlTagCount === 0
-        ? "No XML tags — consider using <context>, <task>, <format> for Claude"
-        : `Uses ${xmlTagCount} XML tag${xmlTagCount !== 1 ? "s" : ""} for structure`,
+        ? "No XML tags — Claude reads structures like <context>, <task>, <format> really well"
+        : `Uses ${xmlTagCount} XML tag${xmlTagCount !== 1 ? "s" : ""} to separate sections cleanly`,
   })
 
   const total = Math.min(

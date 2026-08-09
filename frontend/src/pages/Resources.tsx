@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ExternalLink, BookMarked } from "lucide-react"
+import { motion } from "framer-motion"
+import { ExternalLink } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -36,14 +37,14 @@ export default function Resources() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-2">
-        <BookMarked className="h-5 w-5 text-primary" />
-        <h1 className="text-3xl font-bold">Resources</h1>
+      <div className="mb-10">
+        <p className="label-comment text-primary mb-3">// further reading</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Resources</h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          An opinionated shelf of the things we actually recommend —
+          official docs, frameworks, tutorials, and tools.
+        </p>
       </div>
-      <p className="text-muted-foreground mb-8">
-        Curated links to official documentation, AI literacy frameworks, prompt engineering guides,
-        and GitHub repositories.
-      </p>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <Tabs value={category} onValueChange={(v) => setCategory(v as ResourceCategory | "all")}>
@@ -56,7 +57,7 @@ export default function Resources() {
           </TabsList>
         </Tabs>
         <Input
-          placeholder="Search resources..."
+          placeholder="Search by title, topic, or tag…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="sm:w-64 text-sm"
@@ -65,14 +66,16 @@ export default function Resources() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((resource) => (
-          <a
+          <motion.a
             key={resource.id}
             href={resource.url}
             target="_blank"
             rel="noopener noreferrer"
             className="group block"
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
           >
-            <Card className="h-full transition-all hover:shadow-md hover:border-primary/40 cursor-pointer">
+            <Card className="h-full transition-colors duration-150 hover:border-primary/30 cursor-pointer">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="text-sm font-semibold leading-snug group-hover:text-primary transition-colors">
@@ -95,13 +98,13 @@ export default function Resources() {
                 </div>
               </CardContent>
             </Card>
-          </a>
+          </motion.a>
         ))}
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-muted-foreground py-12">
-          No resources match your search.
+        <p className="label-comment text-center py-12">
+          nothing matches that search — try a shorter term
         </p>
       )}
     </div>

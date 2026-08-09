@@ -25,7 +25,7 @@ export function PromptEditor({ value, onChange, onSubmit, onClear, isLoading }: 
           Prompt
         </label>
         <span className="text-xs text-muted-foreground">
-          {value.length.toLocaleString()} chars · ⌘↵ to send
+          {value.length.toLocaleString()} chars · ⌘↵ to run
         </span>
       </div>
       <Textarea
@@ -33,7 +33,7 @@ export function PromptEditor({ value, onChange, onSubmit, onClear, isLoading }: 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKey}
-        placeholder="Write your prompt here, or select a template above..."
+        placeholder="Write a prompt here, or start from a template on the left…"
         className="min-h-[260px] font-mono text-sm resize-y"
         disabled={isLoading}
       />
@@ -59,7 +59,7 @@ export function PromptEditor({ value, onChange, onSubmit, onClear, isLoading }: 
           ) : (
             <Send className="h-3.5 w-3.5" />
           )}
-          {isLoading ? "Sending..." : "Send to Claude"}
+          {isLoading ? "Running…" : "Run on Claude"}
         </Button>
       </div>
     </div>

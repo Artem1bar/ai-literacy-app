@@ -39,13 +39,13 @@ export async function sendPrompt(req: PromptRequest): Promise<PromptResponse> {
   if (!res.ok) {
     if (res.status === 429) {
       throw new ApiError(
-        "Rate limit reached — you can send 10 prompts per minute. Please wait a moment.",
+        "You're going a bit fast for us — the lab allows 10 prompts a minute. Give it a moment and try again.",
         429,
       )
     }
     const body = await res.text().catch(() => "")
     throw new ApiError(
-      `Request failed (${res.status})${body ? `: ${body}` : ""}`,
+      `The request didn't go through (status ${res.status})${body ? ` — ${body}` : ""}. Try again in a second, or check your connection.`,
       res.status,
     )
   }

@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router"
 import { Brain, Menu, GraduationCap, BookOpen, Code, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   Sheet,
   SheetContent,
@@ -15,112 +15,161 @@ import { useRole } from "@/hooks/useRole"
 import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
-  { label: "Learn", href: ROUTES.LEARN },
+  { label: "Learn",      href: ROUTES.LEARN },
   { label: "Prompt Lab", href: ROUTES.LAB },
-  { label: "Resources", href: ROUTES.RESOURCES },
-  { label: "Profile", href: ROUTES.PROFILE },
+  { label: "Resources",  href: ROUTES.RESOURCES },
+  { label: "Profile",    href: ROUTES.PROFILE },
 ]
 
 const ROLE_ICONS = {
-  student: GraduationCap,
+  student:   GraduationCap,
   professor: BookOpen,
   developer: Code,
+}
+
+const ROLE_TOKEN: Record<string, string> = {
+  student:   "student",
+  professor: "professor",
+  developer: "developer",
 }
 
 export function Navbar() {
   const location = useLocation()
   const { role, roleConfig } = useRole()
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 4)
+    window.addEventListener("scroll", handler, { passive: true })
+    return () => window.removeEventListener("scroll", handler)
+  }, [])
 
   const RoleIcon = role ? ROLE_ICONS[role] : null
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between">
+    <header className={cn(
+      "sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-md transition-shadow duration-200",
+      scrolled && "shadow-[0_1px_0_hsl(var(--border))]",
+    )}>
+      {/* Top edge glow */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none" />
+
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+
           {/* Logo */}
-          <Link to={ROUTES.HOME} className="flex items-center gap-2 font-semibold">
-            <Brain className="h-5 w-5 text-primary" />
-            <span className="hidden sm:inline">{APP_NAME}</span>
+          <Link
+            to={ROUTES.HOME}
+            className="flex items-center gap-2.5 group"
+            aria-label="AI Literacy home"
+          >
+            <div className="rounded-md border border-border p-2 group-hover:border-primary/40 group-hover:bg-primary/5 transition-all">
+              <Brain className="h-4 w-4 text-primary" />
+            </div>
+            <span className="font-mono-data text-base font-medium text-foreground hidden sm:inline tracking-tight">
+              {APP_NAME}
+            </span>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={cn(
-                  "px-3 py-2 text-sm rounded-md transition-colors",
-                  location.pathname === link.href
-                    ? "bg-accent text-accent-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center gap-0.5">
+            {NAV_LINKS.map((link) => {
+              const active = location.pathname === link.href
+                || location.pathname.startsWith(link.href + "/")
+              return (
+                <motion.div
+                  key={link.href}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                >
+                  <Link
+                    to={link.href}
+                    className={cn(
+                      "block px-4 py-2 text-base rounded-md transition-colors",
+                      active
+                        ? "text-foreground bg-accent font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              )
+            })}
           </nav>
 
-          {/* Role badge + mobile menu */}
+          {/* Role token + mobile menu */}
           <div className="flex items-center gap-2">
-            {role && roleConfig && (
+            {role && roleConfig && RoleIcon && (
               <Link to={ROUTES.HOME}>
-                <Badge variant="secondary" className="hidden sm:flex items-center gap-1 cursor-pointer">
-                  {RoleIcon && <RoleIcon className="h-3 w-3" />}
-                  {roleConfig.label}
-                </Badge>
+                <span className="hidden sm:flex items-center gap-1.5 font-mono-data text-sm px-2.5 py-1 rounded border border-border text-muted-foreground hover:border-primary/40 hover:text-primary transition-all">
+                  [{ROLE_TOKEN[role]}]
+                </span>
               </Link>
             )}
 
             {/* Mobile menu */}
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <Brain className="h-5 w-5" />
-                    {APP_NAME}
-                  </SheetTitle>
-                </SheetHeader>
-                <nav className="mt-6 flex flex-col gap-1">
-                  {NAV_LINKS.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        "px-3 py-2 text-sm rounded-md transition-colors",
-                        location.pathname === link.href
-                          ? "bg-accent text-accent-foreground font-medium"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                  {role && roleConfig && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <p className="px-3 text-xs text-muted-foreground mb-2">Current role</p>
-                      <div className="px-3 flex items-center gap-2 text-sm font-medium">
-                        {RoleIcon && <RoleIcon className="h-4 w-4" />}
-                        {roleConfig.label}
-                      </div>
-                    </div>
-                  )}
-                </nav>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-4"
+                  className="md:hidden h-8 w-8"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-60 bg-background border-border/60">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Brain className="h-4 w-4 text-primary" />
+                    <span className="font-mono-data text-sm">{APP_NAME}</span>
+                  </SheetTitle>
+                </SheetHeader>
+
+                <nav className="mt-6 flex flex-col gap-0.5">
+                  {NAV_LINKS.map((link) => {
+                    const active = location.pathname === link.href
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "px-3 py-2 text-sm rounded transition-colors",
+                          active
+                            ? "text-foreground bg-accent font-medium"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    )
+                  })}
+                </nav>
+
+                {role && roleConfig && (
+                  <div className="mt-6 pt-4 border-t border-border/60">
+                    <p className="px-3 label-comment mb-2">// current role</p>
+                    <div className="px-3">
+                      <span className="font-mono-data text-xs text-primary border border-primary/20 bg-primary/5 rounded px-2 py-1">
+                        [{ROLE_TOKEN[role]}]
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-4 h-7 w-7"
                   onClick={() => setOpen(false)}
                   aria-label="Close menu"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </Button>
               </SheetContent>
             </Sheet>

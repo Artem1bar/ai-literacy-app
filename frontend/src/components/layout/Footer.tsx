@@ -3,19 +3,19 @@ import { APP_NAME } from "@/lib/constants"
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background mt-auto">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {APP_NAME}. Built with Claude Sonnet 4.6.
+          <p className="text-base text-muted-foreground">
+            © {new Date().getFullYear()} {APP_NAME}. Written alongside Claude Sonnet 4.6.
           </p>
-          <div className="flex gap-4 text-sm text-muted-foreground">
+          <div className="flex gap-5 text-base text-muted-foreground">
             <a
               href="https://docs.anthropic.com"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
             >
-              Anthropic Docs
+              Anthropic docs
             </a>
             <a
               href="https://ailiteracyframework.org/"
@@ -23,7 +23,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
             >
-              AILit Framework
+              AILit framework
             </a>
             <a
               href="https://github.com/anthropics/prompt-eng-interactive-tutorial"
@@ -31,7 +31,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
             >
-              Prompt Tutorial
+              Prompt tutorial
             </a>
           </div>
         </div>

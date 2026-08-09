@@ -5,7 +5,7 @@ export const PROMPT_TEMPLATES: readonly PromptTemplate[] = [
   {
     id: "essay-brainstorm",
     title: "Essay Brainstorm",
-    description: "Generate thesis angles and argument structures for a given topic.",
+    description: "Get three to five distinct thesis angles on a topic before you commit to one.",
     category: "student",
     roles: ["student"],
     framework: "CO-STAR",
@@ -37,7 +37,7 @@ Organize each thesis option as a numbered section with clear subheadings.
   {
     id: "study-plan",
     title: "Study Plan Generator",
-    description: "Create a structured study plan for an upcoming exam or learning goal.",
+    description: "Turn an exam date and a topic list into a realistic day-by-day schedule with active-recall checkpoints.",
     category: "student",
     roles: ["student"],
     framework: "RISEN",
@@ -69,7 +69,7 @@ Constraints: The plan must be realistic for a student with other classes. Includ
   {
     id: "source-evaluator",
     title: "Source Evaluator",
-    description: "Critically evaluate a source or claim using structured reasoning.",
+    description: "Walk through a source claim-by-claim: who's saying it, what evidence supports it, and where the argument wobbles.",
     category: "student",
     roles: ["student", "professor"],
     framework: "Chain-of-Thought",
@@ -97,7 +97,7 @@ Provide your reasoning at each step, then a final assessment with your confidenc
   {
     id: "concept-explainer",
     title: "Concept Explainer",
-    description: "Explain a complex concept at your chosen level of detail.",
+    description: "Get a concept explained at the exact depth you need — from ELI5 to graduate-level, with analogies and common misconceptions.",
     category: "student",
     roles: ["student"],
     framework: "Plain",
@@ -127,7 +127,7 @@ Keep the explanation {{length}} and use {{style}} language.`,
   {
     id: "assignment-designer",
     title: "Assignment Designer",
-    description: "Design an AI-resilient assignment that tests genuine understanding.",
+    description: "Build an assignment that tests real understanding — the kind that's hard to outsource to a chatbot without giving the game away.",
     category: "professor",
     roles: ["professor"],
     framework: "CO-STAR",
@@ -167,7 +167,7 @@ Provide:
   {
     id: "rubric-builder",
     title: "Rubric Builder",
-    description: "Create a detailed grading rubric for any assignment type.",
+    description: "Draft a rubric with clear criteria, four performance levels, and descriptors specific enough that two graders would actually agree.",
     category: "professor",
     roles: ["professor"],
     framework: "RISEN",
@@ -197,7 +197,7 @@ Constraints: Total points should sum to {{total_points}}. Use specific, measurab
   {
     id: "lesson-plan",
     title: "Lesson Plan Generator",
-    description: "Build a complete lesson plan with learning objectives and activities.",
+    description: "A ready-to-teach lesson plan with measurable objectives, timing, an active-learning exercise, and a formative check.",
     category: "professor",
     roles: ["professor"],
     framework: "RISEN",
@@ -233,7 +233,7 @@ Constraints: Include at least one activity where students interact with each oth
   {
     id: "system-prompt-scaffold",
     title: "System Prompt Scaffold",
-    description: "Write a system prompt for an AI-powered application.",
+    description: "A production-quality system prompt — identity, boundaries, output format, edge cases, and the test cases to prove it holds.",
     category: "developer",
     roles: ["developer"],
     framework: "CO-STAR",
@@ -274,7 +274,7 @@ Provide:
   {
     id: "code-review-assistant",
     title: "Code Review Assistant",
-    description: "Get structured code review with reasoning about quality, security, and performance.",
+    description: "A structured review: correctness, security, performance, readability, error handling — each issue flagged with severity and a fix.",
     category: "developer",
     roles: ["developer"],
     framework: "Chain-of-Thought",
@@ -309,7 +309,7 @@ For each issue found, provide:
   {
     id: "api-integration-helper",
     title: "API Integration Helper",
-    description: "Generate Claude API integration code with best practices.",
+    description: "Production-ready Claude API code with proper error handling, retries, type hints, and no hardcoded keys — in your language of choice.",
     category: "developer",
     roles: ["developer"],
     framework: "Plain",
@@ -345,7 +345,7 @@ Provide:
   {
     id: "claude-md-generator",
     title: "CLAUDE.md Generator",
-    description: "Generate a CLAUDE.md configuration file for your project.",
+    description: "A CLAUDE.md that tells Claude Code exactly what it needs to know about your project — stack, conventions, commands, the things to never touch.",
     category: "developer",
     roles: ["developer"],
     framework: "Plain",
@@ -379,7 +379,7 @@ Keep it concise but comprehensive. Use markdown formatting. Focus on information
   {
     id: "decision-framework",
     title: "Decision Framework",
-    description: "Systematically evaluate a complex decision with multiple options.",
+    description: "Three scenarios per option (optimistic, realistic, pessimistic), a comparison matrix, and a reversibility check to catch mistakes you can undo.",
     category: "general",
     roles: ["student", "professor", "developer"],
     framework: "Tree-of-Thought",
@@ -414,7 +414,7 @@ Branch 3 — Pessimistic scenario: What could go wrong?
   {
     id: "research-summary",
     title: "Research Summary",
-    description: "Progressively compress a document into a dense, information-rich summary.",
+    description: "A Chain-of-Density summary — three passes, each one denser than the last, ending at abstract-level compression.",
     category: "general",
     roles: ["student", "professor"],
     framework: "Chain-of-Density",
@@ -444,7 +444,7 @@ After the 3 summaries, provide:
   {
     id: "prompt-debugger",
     title: "Prompt Debugger",
-    description: "Diagnose why a prompt is underperforming and get an improved version.",
+    description: "Paste a prompt that isn't working, show what you expected vs what you got, and get a diagnosis plus a rewritten version that fixes the specific failures.",
     category: "general",
     roles: ["student", "professor", "developer"],
     framework: "ReAct",
@@ -484,7 +484,7 @@ After the improved prompt, explain:
   {
     id: "persona-creator",
     title: "Persona Creator",
-    description: "Design a reusable AI persona for a specific workflow.",
+    description: "A reusable AI persona with identity, voice, hard constraints, and example turns — the kind that stays in character across a long conversation.",
     category: "general",
     roles: ["professor", "developer"],
     framework: "RISEN",

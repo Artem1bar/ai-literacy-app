@@ -9,16 +9,17 @@ export default function NotFound() {
         <Brain className="h-8 w-8 text-primary" />
       </div>
       <h1 className="text-6xl font-bold text-muted-foreground/30 mb-2">404</h1>
-      <h2 className="text-xl font-semibold mb-2">Page not found</h2>
-      <p className="text-muted-foreground text-sm mb-6 max-w-sm">
-        The page you're looking for doesn't exist. It may have been moved or deleted.
+      <h2 className="text-xl font-semibold mb-2">Nothing to see at this URL</h2>
+      <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
+        The page you tried doesn't exist — or doesn't exist yet. Either way, the useful stuff is
+        one click away.
       </p>
       <div className="flex gap-3">
         <Button asChild>
-          <Link to="/">Go home</Link>
+          <Link to="/">Back to the homepage</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to="/learn">Browse modules</Link>
+          <Link to="/learn">See the modules</Link>
         </Button>
       </div>
     </div>

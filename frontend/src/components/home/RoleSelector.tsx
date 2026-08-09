@@ -1,5 +1,5 @@
-import { GraduationCap, BookOpen, Code, CheckCircle } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { GraduationCap, BookOpen, Code, Check } from "lucide-react"
+import { motion } from "framer-motion"
 import { USER_ROLES } from "@/data/user-roles"
 import { useRole } from "@/hooks/useRole"
 import { cn } from "@/lib/utils"
@@ -11,73 +11,102 @@ const ROLE_ICONS: Record<UserRole, React.ElementType> = {
   developer: Code,
 }
 
-const ROLE_COLORS: Record<UserRole, string> = {
-  student: "text-blue-500 bg-blue-500/10 group-hover:bg-blue-500/20",
-  professor: "text-purple-500 bg-purple-500/10 group-hover:bg-purple-500/20",
-  developer: "text-green-500 bg-green-500/10 group-hover:bg-green-500/20",
-}
-
-const ROLE_BORDER_ACTIVE: Record<UserRole, string> = {
-  student: "border-blue-500 ring-2 ring-blue-500/20",
-  professor: "border-purple-500 ring-2 ring-purple-500/20",
-  developer: "border-green-500 ring-2 ring-green-500/20",
+// Terminal-style bracket tokens per role
+const ROLE_TOKEN: Record<UserRole, string> = {
+  student:   "student",
+  professor: "professor",
+  developer: "developer",
 }
 
 export function RoleSelector() {
   const { role, setRole } = useRole()
 
   return (
-    <section id="roles" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="text-center mb-10">
-        <h2 className="text-2xl font-bold sm:text-3xl">Who Are You Learning For?</h2>
-        <p className="mt-3 text-muted-foreground">
-          Choose your role to get a personalised learning path. You can change this anytime.
-        </p>
-      </div>
+    <section id="roles" className="border-t border-border bg-background">
+      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="label-comment text-primary mb-5">// tell us who you are</p>
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-[2.75rem] leading-tight">
+            What are you using AI for?{" "}
+            <span className="text-muted-foreground font-normal">
+              We'll order the modules.
+            </span>
+          </h2>
+          <p className="mt-3 text-base text-muted-foreground">
+            No signup. Switch roles anytime.
+          </p>
+        </motion.div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 max-w-3xl mx-auto">
-        {USER_ROLES.map((roleConfig) => {
-          const Icon = ROLE_ICONS[roleConfig.id]
-          const isSelected = role === roleConfig.id
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 max-w-3xl">
+          {USER_ROLES.map((roleConfig, i) => {
+            const Icon = ROLE_ICONS[roleConfig.id]
+            const isSelected = role === roleConfig.id
 
-          return (
-            <button
-              key={roleConfig.id}
-              onClick={() => setRole(roleConfig.id)}
-              className="group text-left"
-              aria-pressed={isSelected}
-            >
-              <Card className={cn(
-                "h-full transition-all cursor-pointer hover:shadow-md",
-                isSelected
-                  ? ROLE_BORDER_ACTIVE[roleConfig.id]
-                  : "hover:border-primary/30",
-              )}>
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={cn(
-                      "rounded-lg p-2.5 transition-colors",
-                      ROLE_COLORS[roleConfig.id],
-                    )}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    {isSelected && (
-                      <CheckCircle className={cn("h-5 w-5",
-                        roleConfig.id === "student" && "text-blue-500",
-                        roleConfig.id === "professor" && "text-purple-500",
-                        roleConfig.id === "developer" && "text-green-500",
-                      )} />
-                    )}
-                  </div>
-                  <h3 className="font-semibold">{roleConfig.label}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                    {roleConfig.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </button>
-          )
-        })}
+            return (
+              <motion.button
+                key={roleConfig.id}
+                onClick={() => setRole(roleConfig.id)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "group relative text-left rounded-lg border p-6 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                  isSelected
+                    ? "border-primary/50 bg-primary/5"
+                    : "border-border bg-background hover:border-primary/30 hover:bg-card/60",
+                )}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.45, delay: i * 0.08 }}
+                whileTap={{ scale: 0.985 }}
+              >
+                {/* Left accent bar when selected */}
+                <div className={cn(
+                  "absolute left-0 top-4 bottom-4 w-0.5 rounded-r transition-all duration-200",
+                  isSelected ? "bg-primary" : "bg-transparent group-hover:bg-primary/30",
+                )} />
+
+                <div className="flex items-start justify-between mb-4">
+                  {/* Token badge */}
+                  <span className={cn(
+                    "font-mono-data text-sm px-2.5 py-1 rounded border transition-colors",
+                    isSelected
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground group-hover:border-primary/30",
+                  )}>
+                    [{ROLE_TOKEN[roleConfig.id]}]
+                  </span>
+
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    >
+                      <Check className="h-4 w-4 text-primary" />
+                    </motion.div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2.5 mb-2">
+                  <Icon className={cn(
+                    "h-5 w-5 transition-colors",
+                    isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+                  )} />
+                  <h3 className="text-lg font-semibold">{roleConfig.label.split(" /")[0]}</h3>
+                </div>
+
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {roleConfig.description}
+                </p>
+              </motion.button>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
