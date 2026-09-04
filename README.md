@@ -76,7 +76,8 @@ Backend — copy `backend/.env.example` to `backend/.env`:
 | `ANTHROPIC_API_KEY` | Anthropic API key (server-side only, never exposed to the frontend) |
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins; default `http://localhost:5173` |
 | `RATE_LIMIT` | slowapi rate-limit string for `/api/prompt`; default `10/minute` |
-| `STARJOBS_STUB` | `true` (default) serves stub job postings until a public Star Jobs API exists |
+
+Only those three keys may appear in `.env` — Settings rejects unknown ones. `STARJOBS_STUB` (default `true`, stubbed job postings until a public Star Jobs API exists) is read from the process environment instead.
 
 ## Project structure
 
