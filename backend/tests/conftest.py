@@ -29,8 +29,17 @@ async def client(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[AsyncClient]:
         fake_send_message,
     )
 
+    # The router refuses to call Claude without a key; tests act as a configured server.
+    from config import settings
+
+    monkeypatch.setattr(settings, "anthropic_api_key", "test-key")
+
     # Import after patching so module-level refs see the patched symbol.
     from main import app
+    from routers.prompt import limiter
+
+    # The limiter's in-memory storage outlives the app between tests.
+    limiter.reset()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
