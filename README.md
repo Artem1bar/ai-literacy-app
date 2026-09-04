@@ -77,3 +77,7 @@ All module content lives in `frontend/src/data/` as TypeScript data files — no
 - `prompt-templates.ts` — reusable prompt templates
 - `resources.ts` — curated external links
 - `user-roles.ts` — role definitions and display config
+
+## Built with
+
+Developed with Claude Code as the coding agent; Claude also powers the in-app Prompt Lab.
