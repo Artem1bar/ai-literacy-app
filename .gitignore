@@ -25,3 +25,12 @@ htmlcov/
 
 # QA visual snapshots (tooling output, not source)
 /frontend/.qa-visual/
+
+# env / build output / local databases
+.env.*
+!.env.example
+.next/
+build/
+coverage/
+*.db
+*.sqlite
