@@ -3,6 +3,7 @@ import { ExternalLink, MapPin } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { fetchJobs, type JobsResponse } from "@/lib/api"
+import { BACKEND_ENABLED } from "@/lib/constants"
 
 interface OpenJobsProps {
   socCode: string
@@ -19,6 +20,7 @@ export function OpenJobs({ socCode, parishId = null }: OpenJobsProps) {
   const query = useQuery<JobsResponse>({
     queryKey: ["jobs", socCode, parishId],
     queryFn: () => fetchJobs(socCode, parishId, 6),
+    enabled: BACKEND_ENABLED,
     staleTime: 5 * 60 * 1_000,
   })
 

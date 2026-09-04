@@ -1,6 +1,6 @@
 import { GraduationCap, BookOpen, Code, CheckCircle, HardHat } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { USER_ROLES } from "@/data/user-roles"
+import { availableRoles } from "@/lib/features"
 import { useRole } from "@/hooks/useRole"
 import { cn } from "@/lib/utils"
 import type { UserRole } from "@/data/types"
@@ -39,7 +39,7 @@ export function RoleSelector() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
-        {USER_ROLES.map((roleConfig) => {
+        {availableRoles().map((roleConfig) => {
           const Icon = ROLE_ICONS[roleConfig.id]
           const isSelected = role === roleConfig.id
 

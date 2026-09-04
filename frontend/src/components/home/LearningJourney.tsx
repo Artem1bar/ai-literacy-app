@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
-import { ROUTES } from "@/lib/constants"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
 
 const WHY_ITEMS = [
   {
@@ -49,7 +49,9 @@ const HOW_STEPS = [
     index: "02",
     title: "Read, then try it",
     description:
-      "Every module ends with a challenge that opens pre-seeded in the Prompt Lab.",
+      BACKEND_ENABLED
+        ? "Every module ends with a challenge that opens pre-seeded in the Prompt Lab."
+        : "Every module ends with a hands-on challenge and a starter prompt for your own Claude session.",
     icon: FlaskConical,
   },
   {

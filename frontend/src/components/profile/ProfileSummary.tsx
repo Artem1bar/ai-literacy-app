@@ -20,6 +20,7 @@ import { SECTORS } from "@/data/louisiana"
 import { USER_ROLES } from "@/data/user-roles"
 import type { UserRole } from "@/data/types"
 import { cn } from "@/lib/utils"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
 
 const ROLE_ICONS: Record<UserRole, React.ElementType> = {
   student: GraduationCap,
@@ -49,6 +50,36 @@ export function ProfileSummary() {
     : null
 
   const RoleIcon = profile.role ? ROLE_ICONS[profile.role] : null
+
+  if (!BACKEND_ENABLED) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-between gap-3 p-5">
+          <div className="flex items-center gap-3">
+            {RoleIcon && profile.role ? (
+              <div className={cn("rounded-lg bg-muted p-2.5", ROLE_COLORS[profile.role])}>
+                <RoleIcon className="h-5 w-5" />
+              </div>
+            ) : (
+              <div className="rounded-lg bg-muted p-2.5 text-muted-foreground">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+            )}
+            <div>
+              <p className="text-xs text-muted-foreground">Role</p>
+              <p className="font-semibold">{roleConfig?.label ?? "Not selected"}</p>
+            </div>
+          </div>
+          <Button asChild size="sm" variant="ghost">
+            <Link to={`${ROUTES.HOME}#roles`} className="gap-1">
+              <Pencil className="h-3 w-3" />
+              Change
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className="space-y-4">

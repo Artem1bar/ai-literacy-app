@@ -5,9 +5,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ModuleCard } from "@/components/learn/ModuleCard"
 import { RecommendedPath } from "@/components/learn/RecommendedPath"
 import { MODULES } from "@/data/modules"
-import { USER_ROLES } from "@/data/user-roles"
 import { useProfile } from "@/hooks/useProfile"
 import { useCurriculum } from "@/hooks/useOccupation"
+import { BACKEND_ENABLED } from "@/lib/constants"
+import { availableRoles } from "@/lib/features"
 import type { UserRole } from "@/data/types"
 
 export default function Learn() {
@@ -46,9 +47,11 @@ export default function Learn() {
         </p>
       </div>
 
-      <div className="mb-6">
-        <RecommendedPath />
-      </div>
+      {BACKEND_ENABLED && (
+        <div className="mb-6">
+          <RecommendedPath />
+        </div>
+      )}
 
       {/* Role filter */}
       <Tabs
@@ -58,7 +61,7 @@ export default function Learn() {
       >
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
-          {USER_ROLES.map((r) => (
+          {availableRoles().map((r) => (
             <TabsTrigger key={r.id} value={r.id}>
               {r.label.split(" /")[0]}
               {profile.role === r.id && (

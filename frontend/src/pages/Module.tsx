@@ -10,7 +10,7 @@ import { ProgressBar } from "@/components/learn/ProgressBar"
 import { MODULES } from "@/data/modules"
 import { useProgressStore } from "@/store/progressStore"
 import { useLabSeedStore } from "@/store/labSeedStore"
-import { ROUTES } from "@/lib/constants"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
 
 export default function Module() {
   const { slug } = useParams<{ slug: string }>()
@@ -172,25 +172,34 @@ export default function Module() {
                   </p>
                 </div>
               </div>
-              <Button
-                size="sm"
-                className="gap-1.5 w-full sm:w-auto"
-                onClick={() => {
-                  if (!module.labChallenge) return
-                  setLabSeed({
-                    prompt: module.labChallenge.starterPrompt,
-                    source: {
-                      moduleId: module.id,
-                      moduleTitle: module.title,
-                      challengeTitle: module.labChallenge.title,
-                    },
-                  })
-                  navigate(ROUTES.LAB)
-                }}
-              >
-                Try this in the Lab
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+              {BACKEND_ENABLED ? (
+                <Button
+                  size="sm"
+                  className="gap-1.5 w-full sm:w-auto"
+                  onClick={() => {
+                    if (!module.labChallenge) return
+                    setLabSeed({
+                      prompt: module.labChallenge.starterPrompt,
+                      source: {
+                        moduleId: module.id,
+                        moduleTitle: module.title,
+                        challengeTitle: module.labChallenge.title,
+                      },
+                    })
+                    navigate(ROUTES.LAB)
+                  }}
+                >
+                  Try this in the Lab
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              ) : (
+                <div>
+                  <p className="label-comment text-primary/75 mb-2">// starter prompt — take it to any Claude session</p>
+                  <pre className="whitespace-pre-wrap rounded-md border border-border/60 bg-background/60 p-3 font-mono text-xs leading-relaxed text-foreground/90">
+                    {module.labChallenge.starterPrompt}
+                  </pre>
+                </div>
+              )}
             </motion.div>
           )}
 

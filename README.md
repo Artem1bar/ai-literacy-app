@@ -10,8 +10,8 @@ Learn to use AI like it matters: a role-adaptive course on how LLMs work, prompt
 
 - **Role-adaptive learning** — pick student, professor, or developer; content depth and framing adjust to the role
 - **Thirty structured modules** — readings, callouts, quizzes, and hands-on exercises on AI fundamentals, prompt frameworks, reusable templates, and practical Claude workflows
-- **Prompt Lab** — a live sandbox against Claude; choose the model and max tokens. The Anthropic key never leaves the server: a FastAPI proxy makes the call and rate-limits per IP (slowapi)
-- **Occupation explorer** — Louisiana occupations scored for AI exposure, augmentation vs. automation, and wage premium from public sources (BLS OEWS, O\*NET, Eloundou et al., the Anthropic Economic Index); search, compare two side by side, and see linked megaprojects and job postings. Method in [DATA.md](DATA.md)
+- **Prompt Lab** *(appears when a backend is configured)* — a live sandbox against Claude; choose the model and max tokens. The Anthropic key never leaves the server: a FastAPI proxy makes the call and rate-limits per IP (slowapi)
+- **Occupation explorer** *(appears when a backend is configured)* — Louisiana occupations scored for AI exposure, augmentation vs. automation, and wage premium from public sources (BLS OEWS, O\*NET, Eloundou et al., the Anthropic Economic Index); search, compare two side by side, and see linked megaprojects and job postings. Method in [DATA.md](DATA.md)
 - **Glossary, assessment, resources** — reference terms, a self-assessment, and curated further reading
 - **Local progress** — role and progress persist in the browser (Zustand + localStorage); no accounts
 
@@ -24,11 +24,11 @@ Learn to use AI like it matters: a role-adaptive course on how LLMs work, prompt
 | Routing | React Router v7 |
 | Backend | FastAPI (Python 3.13), uvicorn, slowapi |
 | AI | Claude via the backend proxy |
-| Deployment | Vercel (frontend); the backend runs anywhere uvicorn does |
+| Deployment | Vercel serves the static course; the backend runs anywhere uvicorn does |
 
 ## Quickstart
 
-Two processes: the Vite frontend and the FastAPI backend. Modules, glossary, and resources are static data and work with the frontend alone; the Prompt Lab and the occupation explorer call the backend.
+Two processes: the Vite frontend and the FastAPI backend. Modules, glossary, resources, and progress are static and work with the frontend alone. The Prompt Lab and the occupation explorer call the backend, and they appear only when `VITE_API_URL` points at one (step 3 below) — otherwise the build is the static course and never makes a request.
 
 Prerequisites: Node 22, [pnpm](https://pnpm.io), Python 3.13, and [uv](https://docs.astral.sh/uv/).
 
@@ -54,6 +54,13 @@ cp .env.example .env               # add your ANTHROPIC_API_KEY
 uv run uvicorn main:app --reload   # http://localhost:8000
 ```
 
+Then point the frontend at it and restart `pnpm dev`:
+
+```bash
+cd frontend
+cp .env.example .env.local         # VITE_API_URL=http://localhost:8000
+```
+
 Checks:
 
 ```bash
@@ -67,7 +74,7 @@ Frontend — copy `frontend/.env.example` to `frontend/.env.local`:
 
 | Variable | Description |
 |----------|-------------|
-| `VITE_API_URL` | Backend base URL. Defaults to `http://localhost:8000`; set it at build time for a deployment |
+| `VITE_API_URL` | Backend base URL, read at build time. **Set → the Prompt Lab and occupation explorer are routed and linked; unset → the static course, with those surfaces hidden and no backend calls.** `http://localhost:8000` for local dev; a public URL or `/` (same origin) when self-hosting |
 
 Backend — copy `backend/.env.example` to `backend/.env`:
 
@@ -78,6 +85,7 @@ Backend — copy `backend/.env.example` to `backend/.env`:
 | `RATE_LIMIT` | slowapi rate-limit string for `/api/prompt`; default `10/minute` |
 
 Only those three keys may appear in `.env` — Settings rejects unknown ones. `STARJOBS_STUB` (default `true`, stubbed job postings until a public Star Jobs API exists) is read from the process environment instead.
+
 
 ## Project structure
 
@@ -112,11 +120,13 @@ Occupation records live in `backend/data/occupations/<soc>.json`; see [backend/d
 
 ## Deployment
 
-`vercel.json` builds the frontend from `frontend/` as a static Vite site. Deploy the backend anywhere uvicorn runs, then set `VITE_API_URL` to its URL at build time and add the frontend origin to `ALLOWED_ORIGINS`.
+`vercel.json` builds `frontend/` as a static Vite site and rewrites every path to `index.html` so deep links resolve; pushes to `main` deploy automatically. No `VITE_API_URL` is set there, so the live site is the static course — home, modules, glossary, resources, progress — and the Prompt Lab and occupation explorer are not offered. Nothing on the live site calls a backend.
+
+To publish those features too, run the backend somewhere uvicorn can (with `ANTHROPIC_API_KEY` and `ALLOWED_ORIGINS` including the frontend origin), then add `VITE_API_URL=<its URL>` under Vercel → Project → Settings → Environment Variables (Production) and redeploy. The variable is read at build time, so a redeploy is required.
 
 ## Status
 
-Working MVP, actively developed. A fresh clone was verified on 2026-09-04: frontend install, tests, and build pass, and the backend syncs and passes its tests. The Vercel deployment hosts the frontend only — the Prompt Lab and occupation explorer there need a hosted backend that is not yet deployed, so run both processes locally to use them.
+Working MVP, actively developed. A fresh clone was verified on 2026-09-04: frontend install, tests, and build pass, and the backend syncs and passes its tests. The Vercel deployment is the static course; the Prompt Lab and occupation explorer appear when a backend is configured (`VITE_API_URL`), which is how local development runs.
 
 ## Built with
 

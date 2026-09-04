@@ -17,6 +17,7 @@ import { ProfileSummary } from "@/components/profile/ProfileSummary"
 import { MODULES } from "@/data/modules"
 import { useProgressStore } from "@/store/progressStore"
 import { useProfile } from "@/hooks/useProfile"
+import { BACKEND_ENABLED } from "@/lib/constants"
 
 export default function Profile() {
   const { clearProfile } = useProfile()
@@ -42,9 +43,11 @@ export default function Profile() {
           <UserCircle className="h-5 w-5 text-primary" />
           <h1 className="text-3xl font-bold">Profile</h1>
         </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/onboarding">Run onboarding</Link>
-        </Button>
+        {BACKEND_ENABLED && (
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/onboarding">Run onboarding</Link>
+          </Button>
+        )}
       </div>
 
       <div className="mb-8">

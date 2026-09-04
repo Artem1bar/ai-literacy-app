@@ -96,8 +96,8 @@ export default function Occupations() {
       {browse.isError && (
         <Card className="mt-8 border-destructive/40 bg-destructive/5">
           <CardContent className="p-5 text-sm">
-            Couldn't reach the occupation service. Make sure the backend is running at{" "}
-            <code className="font-mono">http://localhost:8000</code>.
+            Couldn't reach the occupation service. Running locally? Start the FastAPI
+            backend (see the README). On a deployment, the API needs to be configured.
           </CardContent>
         </Card>
       )}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { searchOccupations, type OccupationSearchResponse } from "@/lib/api"
+import { BACKEND_ENABLED } from "@/lib/constants"
 
 const DEBOUNCE_MS = 200
 const STALE_MS = 5 * 60 * 1_000
@@ -22,7 +23,7 @@ export function useOccupationSearch(
   const query = useQuery<OccupationSearchResponse>({
     queryKey: ["occupation-search", debouncedQuery, limit],
     queryFn: () => searchOccupations(debouncedQuery, limit),
-    enabled: debouncedQuery.trim().length > 0,
+    enabled: BACKEND_ENABLED && debouncedQuery.trim().length > 0,
     staleTime: STALE_MS,
     retry: 1,
   })

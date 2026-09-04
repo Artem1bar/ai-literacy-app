@@ -6,23 +6,17 @@ import { Badge } from "@/components/ui/badge"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { APP_NAME, ROUTES } from "@/lib/constants"
+import { navLinks } from "@/lib/features"
 import { useRole } from "@/hooks/useRole"
 import { cn } from "@/lib/utils"
 
-const NAV_LINKS = [
-  { label: "Learn", href: ROUTES.LEARN },
-  { label: "Occupations", href: ROUTES.OCCUPATIONS },
-  { label: "Megaprojects", href: ROUTES.MEGAPROJECTS },
-  { label: "Prompt Lab", href: ROUTES.LAB },
-  { label: "Glossary", href: ROUTES.GLOSSARY },
-  { label: "Resources", href: ROUTES.RESOURCES },
-  { label: "Profile", href: ROUTES.PROFILE },
-]
+const NAV_LINKS = navLinks()
 
 const ROLE_ICONS: Record<string, typeof GraduationCap> = {
   student: GraduationCap,
@@ -93,6 +87,7 @@ export function Navbar() {
                     <Brain className="h-5 w-5" />
                     {APP_NAME}
                   </SheetTitle>
+                  <SheetDescription className="sr-only">Site navigation</SheetDescription>
                 </SheetHeader>
                 <nav className="mt-6 flex flex-col gap-1">
                   {NAV_LINKS.map((link) => (

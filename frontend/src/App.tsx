@@ -1,7 +1,9 @@
 import { lazy, Suspense } from "react"
-import { Routes, Route } from "react-router"
+import { Routes, Route, Navigate } from "react-router"
 import { RootLayout } from "@/components/layout/RootLayout"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
+import { requiresBackend } from "@/lib/features"
 
 const Home = lazy(() => import("@/pages/Home"))
 const Learn = lazy(() => import("@/pages/Learn"))
@@ -45,25 +47,42 @@ function Page({ children }: { children: React.ReactNode }) {
   )
 }
 
+const ROUTE_TABLE: { path: string; element: React.ReactNode }[] = [
+  { path: ROUTES.HOME, element: <Home /> },
+  { path: ROUTES.LEARN, element: <Learn /> },
+  { path: ROUTES.MODULE, element: <Module /> },
+  { path: ROUTES.LAB, element: <Lab /> },
+  { path: ROUTES.RESOURCES, element: <Resources /> },
+  { path: ROUTES.PROFILE, element: <Profile /> },
+  { path: ROUTES.OCCUPATIONS, element: <Occupations /> },
+  { path: ROUTES.OCCUPATION_DETAIL, element: <OccupationDetail /> },
+  { path: ROUTES.ONBOARDING, element: <Onboarding /> },
+  { path: `${ROUTES.ONBOARDING}/:step`, element: <Onboarding /> },
+  { path: ROUTES.COMPARE, element: <Compare /> },
+  { path: ROUTES.GLOSSARY, element: <Glossary /> },
+  { path: ROUTES.MEGAPROJECTS, element: <Megaprojects /> },
+  { path: ROUTES.ASSESSMENT, element: <Assessment /> },
+  { path: "*", element: <NotFound /> },
+]
+
 export default function App() {
   return (
     <Routes>
       <Route element={<RootLayout />}>
-        <Route path="/" element={<Page><Home /></Page>} />
-        <Route path="/learn" element={<Page><Learn /></Page>} />
-        <Route path="/learn/:slug" element={<Page><Module /></Page>} />
-        <Route path="/lab" element={<Page><Lab /></Page>} />
-        <Route path="/resources" element={<Page><Resources /></Page>} />
-        <Route path="/profile" element={<Page><Profile /></Page>} />
-        <Route path="/occupations" element={<Page><Occupations /></Page>} />
-        <Route path="/occupations/:code" element={<Page><OccupationDetail /></Page>} />
-        <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
-        <Route path="/onboarding/:step" element={<Page><Onboarding /></Page>} />
-        <Route path="/compare/:socA/:socB" element={<Page><Compare /></Page>} />
-        <Route path="/glossary" element={<Page><Glossary /></Page>} />
-        <Route path="/megaprojects" element={<Page><Megaprojects /></Page>} />
-        <Route path="/assessment" element={<Page><Assessment /></Page>} />
-        <Route path="*" element={<Page><NotFound /></Page>} />
+        {ROUTE_TABLE.map(({ path, element }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              // Static build: backend-only surfaces send the visitor to the modules index.
+              !BACKEND_ENABLED && requiresBackend(path) ? (
+                <Navigate to={ROUTES.LEARN} replace />
+              ) : (
+                <Page>{element}</Page>
+              )
+            }
+          />
+        ))}
       </Route>
     </Routes>
   )

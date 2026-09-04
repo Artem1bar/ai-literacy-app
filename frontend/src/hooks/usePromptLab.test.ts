@@ -120,6 +120,27 @@ describe("usePromptLab", () => {
     expect(result.current.response).toBeNull()
   })
 
+  it("explains that the Lab needs the backend when nothing answers", async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockRejectedValue(new TypeError("Failed to fetch")) as unknown as typeof fetch
+    const { result } = renderHook(() => usePromptLab())
+
+    act(() => {
+      result.current.setPrompt("hello world")
+    })
+    await act(async () => {
+      await result.current.submit()
+    })
+
+    await waitFor(() => {
+      expect(result.current.error).not.toBeNull()
+    })
+    expect(result.current.error).toMatch(/prompt lab needs the backend/i)
+    expect(result.current.error).not.toMatch(/localhost/)
+    expect(result.current.isLoading).toBe(false)
+  })
+
   it("clear() resets state", async () => {
     const { result } = renderHook(() => usePromptLab())
     act(() => {

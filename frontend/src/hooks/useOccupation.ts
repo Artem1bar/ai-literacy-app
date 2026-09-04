@@ -7,6 +7,7 @@ import {
   type OccupationListResponse,
 } from "@/lib/api"
 import type { LearningPath } from "@/data/types"
+import { BACKEND_ENABLED } from "@/lib/constants"
 
 const STALE_ONE_HOUR = 60 * 60 * 1_000
 
@@ -15,7 +16,7 @@ export function useOccupation(code: string | null) {
   return useQuery<OccupationDetailResponse>({
     queryKey: ["occupation", code],
     queryFn: () => fetchOccupation(code!),
-    enabled: !!code,
+    enabled: BACKEND_ENABLED && !!code,
     staleTime: STALE_ONE_HOUR,
     retry: 1,
   })
@@ -26,7 +27,7 @@ export function useCurriculum(code: string | null) {
   return useQuery<LearningPath>({
     queryKey: ["curriculum", code],
     queryFn: () => fetchCurriculum(code!),
-    enabled: !!code,
+    enabled: BACKEND_ENABLED && !!code,
     staleTime: STALE_ONE_HOUR,
     retry: 1,
   })
@@ -37,6 +38,7 @@ export function useOccupations(priorityOnly = false) {
   return useQuery<OccupationListResponse>({
     queryKey: ["occupations", { priorityOnly }],
     queryFn: () => listOccupations(priorityOnly),
+    enabled: BACKEND_ENABLED,
     staleTime: STALE_ONE_HOUR,
     retry: 1,
   })

@@ -1,3 +1,5 @@
+import { isBackendConfigured, resolveApiUrl } from "./api-url"
+
 export const APP_NAME = "AI Literacy"
 
 export const ROUTES = {
@@ -16,4 +18,10 @@ export const ROUTES = {
   ASSESSMENT: "/assessment",
 } as const
 
-export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000"
+export const API_URL = resolveApiUrl(import.meta.env.VITE_API_URL)
+
+/**
+ * True only when `VITE_API_URL` was set at build time. Without it the app is
+ * the static course: backend-only surfaces are neither routed nor linked.
+ */
+export const BACKEND_ENABLED = isBackendConfigured(import.meta.env.VITE_API_URL)

@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useInView } from "framer-motion"
 import { FlaskConical, BookOpenCheck, Zap, ArrowUpRight } from "lucide-react"
 import { Link } from "react-router"
-import { ROUTES } from "@/lib/constants"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
 
 const FEATURES = [
   {
@@ -13,14 +13,23 @@ const FEATURES = [
     link: ROUTES.LEARN,
     linkLabel: "Browse modules",
   },
-  {
-    icon: FlaskConical,
-    title: "A lab, not a lecture",
-    description:
-      "Every module ends with a challenge you can run on Claude Sonnet 4.6 in one click.",
-    link: ROUTES.LAB,
-    linkLabel: "Open the lab",
-  },
+  BACKEND_ENABLED
+    ? {
+        icon: FlaskConical,
+        title: "A lab, not a lecture",
+        description:
+          "Every module ends with a challenge you can run on Claude Sonnet 4.6 in one click.",
+        link: ROUTES.LAB,
+        linkLabel: "Open the lab",
+      }
+    : {
+        icon: FlaskConical,
+        title: "Practice, not just reading",
+        description:
+          "Every module ends with a hands-on challenge and a starter prompt you can take to any Claude session.",
+        link: ROUTES.LEARN,
+        linkLabel: "Browse modules",
+      },
   {
     icon: Zap,
     title: "Shaped around your work",

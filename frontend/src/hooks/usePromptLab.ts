@@ -1,5 +1,10 @@
 import { useState } from "react"
-import { sendPrompt, type PromptResponse, ApiError } from "@/lib/api"
+import {
+  ApiError,
+  LAB_OFFLINE_MESSAGE,
+  sendPrompt,
+  type PromptResponse,
+} from "@/lib/api"
 import type { PromptTemplate, PromptFramework } from "@/data/types"
 
 interface PromptLabState {
@@ -151,10 +156,10 @@ export function usePromptLab(): PromptLabState {
       const result = await sendPrompt({ prompt })
       setResponse(result)
     } catch (err) {
-      if (err instanceof ApiError) {
+      if (err instanceof ApiError && err.code !== "backend_unreachable") {
         setError(err.message)
       } else {
-        setError("Failed to connect to the backend. Make sure the server is running.")
+        setError(LAB_OFFLINE_MESSAGE)
       }
     } finally {
       setIsLoading(false)

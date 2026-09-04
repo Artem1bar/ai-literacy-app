@@ -1,15 +1,23 @@
 import { Link } from "react-router"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ROUTES } from "@/lib/constants"
+import { BACKEND_ENABLED, ROUTES } from "@/lib/constants"
 import { useRole } from "@/hooks/useRole"
 
 const STATS = [
   { value: "30", label: "modules" },
   { value: "15", label: "templates" },
   { value: "03", label: "frameworks" },
-  { value: "live", label: "Claude API" },
+  ...(BACKEND_ENABLED ? [{ value: "live", label: "Claude API" }] : []),
 ]
+
+const TAGLINE = BACKEND_ENABLED
+  ? "// thirty modules · three paths · live Claude API"
+  : "// thirty modules · three paths · hands-on challenges"
+
+const SUBTITLE = BACKEND_ENABLED
+  ? "Every one pairs with a live Claude Sonnet 4.6 lab."
+  : "Every one ends with a hands-on challenge you can run in your own Claude session."
 
 export function HeroSection() {
   const { role } = useRole()
@@ -24,7 +32,7 @@ export function HeroSection() {
       <div className="relative mx-auto max-w-6xl px-6 py-28 sm:py-36 lg:px-8">
         {/* Comment label — CSS animation, visible immediately */}
         <p className="label-comment text-primary mb-6 animate-fade-in">
-          // thirty modules · three paths · live Claude API
+          {TAGLINE}
         </p>
 
         {/* Headline */}
@@ -35,8 +43,7 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p className="mt-6 max-w-2xl text-lg text-foreground/80 leading-relaxed sm:text-xl animate-slide-up delay-100">
-          Thirty modules on prompt engineering and responsible AI.
-          Every one pairs with a live Claude Sonnet 4.6 lab.
+          Thirty modules on prompt engineering and responsible AI. {SUBTITLE}
         </p>
 
         {/* CTAs */}
@@ -53,7 +60,11 @@ export function HeroSection() {
             size="lg"
             className="h-12 px-6 text-base border-border hover:border-primary/50"
           >
-            <Link to={ROUTES.LAB}>Open the Prompt Lab</Link>
+            {BACKEND_ENABLED ? (
+              <Link to={ROUTES.LAB}>Open the Prompt Lab</Link>
+            ) : (
+              <Link to={ROUTES.RESOURCES}>Browse resources</Link>
+            )}
           </Button>
         </div>
 

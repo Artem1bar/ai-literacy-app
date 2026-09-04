@@ -20,36 +20,94 @@ export interface PromptResponse {
   }
 }
 
+/** Backend error codes the UI distinguishes (mirrors `detail.error` from FastAPI). */
+export type ApiErrorCode =
+  | "backend_unreachable"
+  | "rate_limited"
+  | "lab_not_configured"
+  | (string & {})
+
+/** `status` 0 means the request never reached a server (refused, offline, CORS). */
+export const NETWORK_ERROR_STATUS = 0
+
+export const BACKEND_OFFLINE_MESSAGE =
+  "Couldn't reach the backend — run it locally or configure the API for this deployment."
+export const LAB_OFFLINE_MESSAGE =
+  "Prompt Lab needs the backend — run it locally or configure the API for this deployment."
+export const LAB_UNCONFIGURED_MESSAGE =
+  "Prompt Lab isn't configured on this deployment: the backend has no Anthropic API key. Run the backend locally with ANTHROPIC_API_KEY set, or add it to the hosting environment and redeploy."
+
 export class ApiError extends Error {
   readonly status: number
+  readonly code: ApiErrorCode | null
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code: ApiErrorCode | null = null) {
     super(message)
     this.name = "ApiError"
     this.status = status
+    this.code = code
   }
 }
 
-async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, init)
-  if (!res.ok) {
-    const body = await res.text().catch(() => "")
-    if (res.status === 429) {
-      throw new ApiError(
-        "Rate limit reached — please wait a moment and try again.",
-        429,
-      )
+interface ErrorDetail {
+  code: string | null
+  message: string | null
+}
+
+/** FastAPI wraps HTTPException payloads as `{ detail: string | object }`. */
+function parseErrorDetail(body: string): ErrorDetail {
+  try {
+    const parsed = JSON.parse(body) as { detail?: unknown }
+    const detail = parsed.detail
+    if (typeof detail === "string") return { code: null, message: detail }
+    if (detail && typeof detail === "object") {
+      const d = detail as { error?: unknown; message?: unknown }
+      return {
+        code: typeof d.error === "string" ? d.error : null,
+        message: typeof d.message === "string" ? d.message : null,
+      }
     }
-    throw new ApiError(
-      `Request failed (${res.status})${body ? `: ${body}` : ""}`,
-      res.status,
-    )
+  } catch {
+    // Not JSON — fall through to the raw body.
+  }
+  return { code: null, message: null }
+}
+
+async function request(path: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(`${API_URL}${path}`, init)
+  } catch {
+    throw new ApiError(BACKEND_OFFLINE_MESSAGE, NETWORK_ERROR_STATUS, "backend_unreachable")
+  }
+}
+
+async function throwForStatus(res: Response, rateLimitMessage: string): Promise<never> {
+  if (res.status === 429) throw new ApiError(rateLimitMessage, 429, "rate_limited")
+  const body = await res.text().catch(() => "")
+  const { code, message } = parseErrorDetail(body)
+  if (code === "lab_not_configured") {
+    throw new ApiError(LAB_UNCONFIGURED_MESSAGE, res.status, code)
+  }
+  const explanation = message ?? (body || null)
+  throw new ApiError(
+    explanation
+      ? `Request failed (${res.status}): ${explanation}`
+      : `Request failed (${res.status})`,
+    res.status,
+    code,
+  )
+}
+
+async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await request(path, init)
+  if (!res.ok) {
+    await throwForStatus(res, "Rate limit reached — please wait a moment and try again.")
   }
   return res.json() as Promise<T>
 }
 
 export async function sendPrompt(req: PromptRequest): Promise<PromptResponse> {
-  const res = await fetch(`${API_URL}/api/prompt`, {
+  const res = await request("/api/prompt", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -60,16 +118,9 @@ export async function sendPrompt(req: PromptRequest): Promise<PromptResponse> {
   })
 
   if (!res.ok) {
-    if (res.status === 429) {
-      throw new ApiError(
-        "Rate limit reached — you can send 10 prompts per minute. Please wait a moment.",
-        429,
-      )
-    }
-    const body = await res.text().catch(() => "")
-    throw new ApiError(
-      `Request failed (${res.status})${body ? `: ${body}` : ""}`,
-      res.status,
+    await throwForStatus(
+      res,
+      "Rate limit reached — you can send 10 prompts per minute. Please wait a moment.",
     )
   }
 
