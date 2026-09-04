@@ -34,3 +34,6 @@ build/
 coverage/
 *.db
 *.sqlite
+
+# Vercel CLI link + local build output
+.vercel/
