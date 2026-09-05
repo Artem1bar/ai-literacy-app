@@ -4,7 +4,7 @@ Learn to use AI like it matters: a role-adaptive course on how LLMs work, prompt
 
 **Live:** [ai-literacy-app-seven.vercel.app](https://ai-literacy-app-seven.vercel.app)
 
-![AI Literacy App home page](docs/screenshot.png)
+![AI Literacy App, the Learn page: thirty modules filtered by role](docs/screenshot.png)
 
 ## What it does
 
