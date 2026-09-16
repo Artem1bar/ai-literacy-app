@@ -1,0 +1,1256 @@
+{
+  "$schema": "https://ai-literacy-app.local/schemas/improvement-plan.v1.json",
+  "meta": {
+    "projectName": "ai-literacy-app",
+    "projectPath": "/Users/artembaranovski/ai-literacy-app",
+    "planVersion": "1.0.0",
+    "createdAt": "2026-04-20",
+    "targetAudience": "Louisiana workforce — personalized via 6-digit SOC (Standard Occupational Classification 2018) occupation codes",
+    "intendedConsumer": "Claude coding agent executing the plan phase-by-phase",
+    "stack": {
+      "frontend": "React 19 + Vite 8 + TypeScript 5.9 + Tailwind CSS v4 + shadcn/ui + Zustand (persist) + React Query + React Router v7",
+      "backend": "FastAPI (Python 3.13+) + Anthropic SDK + slowapi (rate limit)",
+      "defaultModel": "claude-sonnet-4-6",
+      "hosting": "Frontend on Vercel; backend currently local-only (deployment added in Phase 6)"
+    }
+  },
+
+  "principles": [
+    "Content lives in TypeScript data files under frontend/src/data/ — never hardcode learning content inside components.",
+    "The Anthropic API key must never leave the FastAPI backend; all Claude traffic is proxied.",
+    "Every Louisiana-specific data point must be traceable to a cited source (BLS, O*NET, Eloundou et al., Anthropic Economic Index, LED, or PwC).",
+    "Per-SOC scores are published with an explicit confidence qualifier and must not be presented as precise.",
+    "Personalization is privacy-preserving and local-first by default (Zustand persist); server-side persistence requires opt-in auth introduced only in Phase 6.",
+    "WCAG 2.1 AA is a launch gate, not a polish task; accessibility checks apply per-phase.",
+    "tdd-guide writes tests before implementation; code-reviewer signs off before the next task starts.",
+    "Phases execute in order. Tasks inside a phase may parallelize if their dependency graph permits.",
+    "No file, import, link, or data reference may cross into or out of the LSU State-of-AI-Louisiana research project."
+  ],
+
+  "separationOfConcerns": {
+    "lsuProject": {
+      "status": "READ-ONLY METHODOLOGICAL REFERENCE",
+      "rule": "This app does not import, link to, copy from, or write into /Users/artembaranovski/Downloads/LSU AI Research. The methodology Louisiana inherits (Eloundou exposure framework, 3-dimensional literacy model, RLMA geography) is sourced independently from public research.",
+      "enforcement": "Any PR that introduces an LSU-project file path or URL fails code review."
+    },
+    "dataLineage": "All per-SOC scores, skill bundles, and curriculum content are built from the primary sources listed under dataSources — not transcribed from the LSU draft."
+  },
+
+  "louisianaContext": {
+    "socScope": {
+      "target": "60–80 priority 6-digit SOC codes",
+      "criteria": [
+        "High AI exposure (>30% per Eloundou et al. 2024 aggregated to SOC level)",
+        "High Louisiana employment (>5,000 workers per BLS OEWS 2025 LA data)",
+        "Megaproject-adjacent (Meta Hyperion, Amazon AWS, Hyundai Steel, Hut 8 / Jacobs, SSE Steel / Persona AI)",
+        "Strategic LA industries — energy & petrochemicals, manufacturing, healthcare, logistics & ports, agriculture, finance & insurance, education, public administration"
+      ],
+      "expansionPath": "Schema supports all ~800 detailed SOC codes; MVP only populates priority set. Non-priority SOCs fall back to sector-level content."
+    },
+    "rlmaFramework": {
+      "source": "Louisiana Workforce Commission Regional Labor Market Areas (8 regions)",
+      "regions": [
+        { "id": "RLMA-1", "name": "New Orleans Region", "anchorProject": "SSE Steel / Persona AI humanoid pilot (St. Bernard Parish)" },
+        { "id": "RLMA-2", "name": "Baton Rouge Region", "anchorProject": "Hyundai Steel (Ascension); Hut 8 / Jacobs (West Feliciana)" },
+        { "id": "RLMA-3", "name": "Houma Region", "anchorProject": "Offshore energy / marine" },
+        { "id": "RLMA-4", "name": "Lafayette / Acadiana Region", "anchorProject": "Oilfield services; healthcare AI" },
+        { "id": "RLMA-5", "name": "Lake Charles Region", "anchorProject": "LNG / petrochemical corridor" },
+        { "id": "RLMA-6", "name": "Alexandria / Central LA Region", "anchorProject": "Military (Fort Johnson); agribusiness" },
+        { "id": "RLMA-7", "name": "Shreveport Region", "anchorProject": "Amazon AWS (Caddo/Bossier, 3 campuses, $12B)" },
+        { "id": "RLMA-8", "name": "Monroe Region", "anchorProject": "Meta Hyperion data center (Richland Parish)" }
+      ]
+    },
+    "priorityEmployers": [
+      "Meta (Hyperion, Richland)",
+      "Amazon AWS (Caddo/Bossier)",
+      "Hyundai Steel (Ascension)",
+      "Hut 8 / Jacobs (West Feliciana)",
+      "SSE Steel Fabrication / Persona AI (St. Bernard)",
+      "Entergy Louisiana",
+      "ExxonMobil, Chevron, Shell (Gulf operations)",
+      "Ochsner, LCMC, LSU Health (healthcare systems)",
+      "Port of South Louisiana, Port of New Orleans"
+    ]
+  },
+
+  "dataSources": [
+    {
+      "id": "eloundou-2024",
+      "name": "Eloundou et al. (2024) — GPTs are GPTs: Labor Market Impact Potential of LLMs",
+      "use": "Task-level exposure scores aggregated to SOC-6-digit level for the exposure metric.",
+      "licensing": "Published in Science; task-level appendix data freely available.",
+      "ingestion": "One-time CSV ingest; versioned checksum stored with data."
+    },
+    {
+      "id": "anthropic-economic-index-2025",
+      "name": "Anthropic Economic Index (2025)",
+      "use": "Augmentation vs automation split per occupation category. Calibrated nationally ~57% augmentation / 43% automation.",
+      "licensing": "Anthropic published dataset.",
+      "ingestion": "Programmatic fetch; adjust per-occupation split for augmentation and replacement metrics."
+    },
+    {
+      "id": "onet-28",
+      "name": "O*NET 28.0 — Occupational Information Network",
+      "use": "SOC-coded tasks, skills, knowledge, abilities, technologies. Canonical occupation taxonomy.",
+      "licensing": "Public domain (U.S. Department of Labor).",
+      "ingestion": "Download tables (Occupation, Tasks, Skills, Technology Skills). Pin to a specific O*NET release version."
+    },
+    {
+      "id": "bls-oews-la-2025",
+      "name": "BLS Occupational Employment and Wage Statistics — Louisiana 2025",
+      "use": "LA employment count per SOC, median wage, wage percentiles (10/25/50/75/90).",
+      "licensing": "Public domain (U.S. Bureau of Labor Statistics).",
+      "ingestion": "Annual refresh script; archived snapshot per release."
+    },
+    {
+      "id": "pwc-ai-jobs-barometer-2025",
+      "name": "PwC AI Jobs Barometer 2024/2025",
+      "use": "Baseline wage premium for AI-skilled roles (56% national); per-SOC adjustment applied.",
+      "licensing": "Publicly reported aggregate statistics; cite at point of use.",
+      "ingestion": "Manual curation; premium per SOC is a derived estimate with confidence label."
+    },
+    {
+      "id": "long-magerko-2020",
+      "name": "Long & Magerko (2020) — What is AI Literacy? Competencies and Design Considerations",
+      "use": "Three-dimensional literacy framework (Technical / Critical / Ethical) drives the skill-bundle structure for every SOC.",
+      "licensing": "Academic publication; cited at point of use."
+    },
+    {
+      "id": "led-opportunitylouisiana",
+      "name": "Louisiana Economic Development (opportunityLouisiana.gov)",
+      "use": "Megaproject metadata, employer announcements, parish-level investment data.",
+      "licensing": "Government press releases; cited by date.",
+      "ingestion": "Periodic manual curation; no live feed."
+    }
+  ],
+
+  "newDataSchemas": {
+    "note": "High-level shape; full TypeScript definitions are produced in Phase 1 Task P1-T1.",
+    "SOCOccupation": {
+      "code": "string (6-digit SOC e.g. '17-2199.01')",
+      "title": "string",
+      "laEmployment": "number | null",
+      "laMedianWage": "number | null",
+      "rlmaDistribution": "record<RLMAId, number> (% of LA workers in each RLMA)",
+      "relatedSOCs": "string[] (career-ladder neighbors)",
+      "typicalEmployers": "string[]",
+      "scoreCard": "SOCScoreCard",
+      "skillBundle": "SkillBundle",
+      "learningPath": "LearningPath",
+      "lastReviewed": "ISO date"
+    },
+    "SOCScoreCard": {
+      "exposure": { "value": "number (0-100)", "confidence": "'low'|'medium'|'high'", "source": "string", "lastComputed": "ISO date" },
+      "augmentation": { "value": "number (0-100)", "confidence": "...", "source": "...", "lastComputed": "..." },
+      "replacement": { "value": "number (0-100)", "confidence": "...", "source": "...", "lastComputed": "..." },
+      "wagePremium": { "value": "number (% uplift)", "confidence": "...", "source": "...", "lastComputed": "..." },
+      "invariant": "augmentation + replacement ≈ exposure (deviation tolerated; noted to user)"
+    },
+    "SkillBundle": {
+      "technical": "SkillItem[] — prompting, tool use, hallucination recognition, context windows, domain-specific AI tools",
+      "critical": "SkillItem[] — output evaluation, uncertainty tolerance, metacognition, verification workflows",
+      "ethical": "SkillItem[] — bias recognition, data governance, accountability, privacy, academic/professional integrity",
+      "domainSpecific": "SkillItem[] — occupation-specific AI applications (e.g. predictive-maintenance for process operators)"
+    },
+    "LearningPath": {
+      "recommendedModules": "ModuleRef[] (ordered)",
+      "supplementalResources": "ResourceRef[]",
+      "estimatedTotalMinutes": "number",
+      "milestones": "Milestone[]"
+    },
+    "GlossaryTerm": {
+      "slug": "string",
+      "term": "string",
+      "short": "string (tooltip-length, ≤120 chars)",
+      "long": "string (full definition, markdown)",
+      "category": "'ai-concepts'|'la-workforce'|'methodology'|'tools'",
+      "relatedSlugs": "string[]",
+      "seeAlso": "{ label, url }[]"
+    },
+    "UserProfile": {
+      "role": "'student'|'professor'|'developer'|'worker'",
+      "socCode": "string | null",
+      "parish": "string | null",
+      "rlma": "RLMAId | null",
+      "sector": "string | null",
+      "currentEmployer": "string | null",
+      "assessmentResult": "AssessmentResult | null"
+    }
+  },
+
+  "phases": [
+
+    {
+      "id": "phase-0",
+      "name": "Blocker Fixes",
+      "goal": "Make the existing Lab and Module flows actually work end-to-end before building new capability on top.",
+      "successCriteria": [
+        "A user can open /lab, compose a prompt, and see a Claude response rendered in ResponseViewer.",
+        "All three backend & frontend call sites reference model id 'claude-sonnet-4-6'.",
+        "A smoke test covers the prompt submission → response-render path."
+      ],
+      "tasks": [
+
+        {
+          "id": "P0-T1",
+          "title": "Replace stale model ID claude-sonnet-4-6-20250514 with claude-sonnet-4-6",
+          "description": "Three call sites default to a dated identifier that does not resolve. Update defaults in the frontend API client, the backend Pydantic request model, and the service function. Keep the field overridable per-request.",
+          "files": [
+            "frontend/src/lib/api.ts",
+            "backend/routers/prompt.py",
+            "backend/services/claude_service.py"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["claude-api", "python-patterns"],
+          "acceptanceCriteria": [
+            "All three files use 'claude-sonnet-4-6' as the default model string.",
+            "Unit test asserts default value.",
+            "A manual curl against /api/prompt returns a 200 with 'content' populated."
+          ],
+          "dependencies": [],
+          "effort": "XS"
+        },
+
+        {
+          "id": "P0-T2",
+          "title": "Wire ResponseViewer into the Lab page",
+          "description": "The Lab.tsx layout never renders ResponseViewer, so Claude responses are discarded. Add the component to the right-hand column of the Lab grid, under PromptEditor, wired to lab.response / lab.isLoading / lab.error from usePromptLab.",
+          "files": [
+            "frontend/src/pages/Lab.tsx",
+            "frontend/src/components/lab/ResponseViewer.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "ResponseViewer renders below PromptEditor on desktop, stacked on mobile.",
+            "Loading state shows skeleton; error state shows message; success state renders markdown + token badge + copy button.",
+            "E2E test: send prompt, response text visible within 30s."
+          ],
+          "dependencies": ["P0-T1"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P0-T3",
+          "title": "Add smoke + integration tests for the Lab round-trip",
+          "description": "Vitest for scoring logic, Playwright for the full round trip against a stubbed backend. Also add pytest coverage for the prompt router (happy path, validation error, rate-limit 429).",
+          "files": [
+            "frontend/src/hooks/usePromptLab.test.ts",
+            "frontend/tests/e2e/lab.spec.ts",
+            "backend/tests/test_prompt_router.py",
+            "frontend/playwright.config.ts",
+            "backend/pyproject.toml"
+          ],
+          "agent": "tdd-guide",
+          "skills": ["tdd-workflow", "e2e-testing", "python-testing"],
+          "acceptanceCriteria": [
+            "`pnpm test` green; `uv run pytest` green.",
+            "Coverage ≥ 70% for usePromptLab.ts and prompt.py."
+          ],
+          "dependencies": ["P0-T2"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P0-T4",
+          "title": "Verify end-to-end Claude call from dev environment",
+          "description": "Run both servers locally, submit the scripted smoke prompt, confirm usage data (input/output tokens) surfaces, confirm markdown renders.",
+          "files": [],
+          "agent": "qa",
+          "skills": ["browse", "qa-only"],
+          "acceptanceCriteria": [
+            "Screenshot evidence of full round-trip attached to PR.",
+            "Claude response ≥ 100 tokens visible in UI."
+          ],
+          "dependencies": ["P0-T3"],
+          "effort": "XS"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-1",
+      "name": "Data Foundation — SOC, Glossary, LA Geography",
+      "goal": "Introduce the SOC-aware data model and the backend data layer without yet surfacing it to the user.",
+      "successCriteria": [
+        "TypeScript types for SOCOccupation, SOCScoreCard, SkillBundle, LearningPath, GlossaryTerm, UserProfile exist and compile.",
+        "Backend serves /occupation/:soc and /curriculum/:soc from a persisted data store.",
+        "Glossary content file has ≥40 entries.",
+        "Parish → RLMA mapping is complete for all 64 LA parishes."
+      ],
+      "tasks": [
+
+        {
+          "id": "P1-T1",
+          "title": "Extend types.ts with SOC and personalization types",
+          "description": "Add discriminated-union-safe readonly types per the newDataSchemas block in this plan. Keep existing Module/RoleConfig types untouched. Export helpers (e.g. `isPrioritySOC`).",
+          "files": [
+            "frontend/src/data/types.ts"
+          ],
+          "agent": "architect",
+          "skills": ["coding-standards", "frontend-patterns"],
+          "acceptanceCriteria": [
+            "All new types are readonly.",
+            "tsc passes with strict mode.",
+            "No breaking changes to existing type consumers."
+          ],
+          "dependencies": ["P0-T4"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P1-T2",
+          "title": "Create glossary data model and seed ≥40 terms",
+          "description": "frontend/src/data/glossary.ts exports `GLOSSARY_TERMS: readonly GlossaryTerm[]`. Seed with: AI-concepts (LLM, token, context window, prompt, hallucination, RLHF, fine-tuning, agent, MCP, XML tags, RAG, temperature, system prompt), tools (Claude, Claude Code, ChatGPT, Copilot), frameworks (CO-STAR, RISEN), LA-workforce (SOC, NAICS, O*NET, RLMA, OEWS), methodology (exposure, augmentation, replacement, wage premium, confidence level).",
+          "files": [
+            "frontend/src/data/glossary.ts",
+            "frontend/src/data/types.ts"
+          ],
+          "agent": "content-research-writer",
+          "skills": ["content-research-writer", "docs"],
+          "acceptanceCriteria": [
+            "≥40 terms with short + long definitions.",
+            "Every term has at least one seeAlso citation to a primary source.",
+            "No broken slug cross-references.",
+            "Terms covering the four score-card metrics explicitly define them."
+          ],
+          "dependencies": ["P1-T1"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P1-T3",
+          "title": "Louisiana geography: parish ↔ RLMA mapping",
+          "description": "frontend/src/data/louisiana.ts exports PARISHES, RLMAS, SECTORS, EMPLOYERS. All 64 LA parishes mapped to one of 8 RLMAs per LWC definitions. Each parish carries population, median household income (public BLS/census source cited), and a list of major employers present.",
+          "files": [
+            "frontend/src/data/louisiana.ts",
+            "frontend/src/data/types.ts"
+          ],
+          "agent": "general-purpose",
+          "skills": ["content-research-writer"],
+          "acceptanceCriteria": [
+            "All 64 parishes present and RLMA-tagged.",
+            "Unit test asserts every parish has an RLMA.",
+            "Employer list cross-references priorityEmployers from the plan."
+          ],
+          "dependencies": ["P1-T1"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P1-T4",
+          "title": "Extend Zustand userStore with SOC/parish/sector profile",
+          "description": "Add socCode, parish, rlma, sector, currentEmployer to UserState. Keep existing `role` for compatibility. Persist via zustand/middleware. Add selector hooks (useProfile, useSOC, useRLMA).",
+          "files": [
+            "frontend/src/store/userStore.ts",
+            "frontend/src/hooks/useRole.ts",
+            "frontend/src/hooks/useProfile.ts"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "localStorage value `ai-literacy-user` migrates old records (role-only) to new shape without data loss.",
+            "Unit test covers migration."
+          ],
+          "dependencies": ["P1-T1"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P1-T5",
+          "title": "Backend data layer — SQLite + ingest scripts",
+          "description": "Introduce SQLite (or JSON files if simpler) under backend/data/. Tables: occupation, score_card, skill_bundle, learning_path, data_source, methodology_revision. Ingest scripts read from /research/eloundou/, /research/onet/, /research/bls-oews-la/ (gitignored raw data, checked-in checksums).",
+          "files": [
+            "backend/data/schema.sql",
+            "backend/data/migrations/0001_init.sql",
+            "backend/services/occupation_repo.py",
+            "backend/scripts/ingest_onet.py",
+            "backend/scripts/ingest_eloundou.py",
+            "backend/scripts/ingest_bls_oews.py",
+            "backend/pyproject.toml"
+          ],
+          "agent": "database-reviewer",
+          "skills": ["python-patterns", "backend-patterns", "api-design"],
+          "acceptanceCriteria": [
+            "Ingest scripts idempotent; re-running does not duplicate.",
+            "Data source checksums checked in to repo so build is reproducible.",
+            "pytest covers the repository layer."
+          ],
+          "dependencies": ["P1-T1"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P1-T6",
+          "title": "Backend endpoints — /occupation/:soc and /curriculum/:soc",
+          "description": "Add FastAPI routes returning the full SOCOccupation and the derived LearningPath. Both routes cached (ETag + Cache-Control: public, max-age=3600) since data is ingest-time-bound. Add /occupations/search?q=... with fuzzy match on title and SOC.",
+          "files": [
+            "backend/routers/occupation.py",
+            "backend/main.py",
+            "backend/services/occupation_service.py"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["api-design", "backend-patterns"],
+          "acceptanceCriteria": [
+            "OpenAPI docs available at /docs.",
+            "All endpoints return 404 for unknown SOC with JSON error body.",
+            "Rate limits inherited from existing config."
+          ],
+          "dependencies": ["P1-T5"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P1-T7",
+          "title": "Frontend API client — occupation + glossary fetchers",
+          "description": "Extend lib/api.ts with fetchOccupation(soc), searchOccupations(query), fetchCurriculum(soc). Integrate with React Query (cache per SOC, staleTime 1h, retry once).",
+          "files": [
+            "frontend/src/lib/api.ts",
+            "frontend/src/hooks/useOccupation.ts",
+            "frontend/src/hooks/useOccupationSearch.ts"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Typed fetchers matching backend response shape.",
+            "React Query devtools visible in dev mode only."
+          ],
+          "dependencies": ["P1-T6"],
+          "effort": "S"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-2",
+      "name": "SOC Content — Curated Priority Set",
+      "goal": "Populate per-SOC scores, skill bundles, and learning paths for 60–80 priority Louisiana occupations.",
+      "successCriteria": [
+        "≥60 SOCs fully populated end-to-end.",
+        "Every score carries a confidence qualifier + cited source.",
+        "Every skill bundle maps across all three literacy dimensions.",
+        "Every learning path resolves to at least 3 existing modules."
+      ],
+      "tasks": [
+
+        {
+          "id": "P2-T1",
+          "title": "Curate the priority SOC list for LA",
+          "description": "Produce docs/priority-socs.md (in-repo) listing 60–80 SOCs selected per the criteria in louisianaContext.socScope. For each: rationale, LA employment count, exposure prior, megaproject link. Reviewed by planner agent.",
+          "files": [
+            "docs/priority-socs.md",
+            "backend/data/seeds/priority_socs.csv"
+          ],
+          "agent": "planner",
+          "skills": ["content-research-writer"],
+          "acceptanceCriteria": [
+            "60–80 SOCs listed.",
+            "Every priority criterion represented (exposure, employment, megaproject, strategic industry).",
+            "CSV seed file consumed by ingest pipeline in P2-T2."
+          ],
+          "dependencies": ["P1-T5"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P2-T2",
+          "title": "Compute per-SOC score cards (exposure / augmentation / replacement / wage premium)",
+          "description": "Implement backend/scripts/compute_score_cards.py. Exposure = mean of task-level Eloundou binary labels per SOC. Augmentation and replacement split per Anthropic Economic Index; if SOC not covered, fall back to sector-mean with confidence=low. Wage premium = PwC baseline × SOC-specific multiplier derived from LA OEWS 90th/50th percentile spread. Persist with source + confidence + lastComputed.",
+          "files": [
+            "backend/scripts/compute_score_cards.py",
+            "backend/data/migrations/0002_score_cards.sql",
+            "backend/tests/test_score_computation.py"
+          ],
+          "agent": "database-reviewer",
+          "skills": ["python-patterns"],
+          "acceptanceCriteria": [
+            "Invariant check: augmentation + replacement within ±15% of exposure (flagged otherwise).",
+            "Every score has non-null confidence.",
+            "Test fixtures cover three SOCs across three confidence levels."
+          ],
+          "dependencies": ["P2-T1"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P2-T3",
+          "title": "Author per-SOC skill bundles (3-dim literacy + domain-specific)",
+          "description": "For each priority SOC, populate technical/critical/ethical skills grounded in Long & Magerko (2020) plus a domainSpecific track derived from O*NET tasks where AI plausibly augments or replaces. Bundles stored in SQLite and surfaced via API.",
+          "files": [
+            "backend/data/seeds/skill_bundles/",
+            "backend/scripts/validate_skill_bundles.py"
+          ],
+          "agent": "content-research-writer",
+          "skills": ["content-research-writer"],
+          "acceptanceCriteria": [
+            "Every SOC has ≥3 items per dimension.",
+            "Every domainSpecific skill cites a concrete O*NET task.",
+            "Validator script passes in CI."
+          ],
+          "dependencies": ["P2-T2"],
+          "effort": "XL"
+        },
+
+        {
+          "id": "P2-T4",
+          "title": "Derive per-SOC learning paths",
+          "description": "Algorithm: ordered module sequence based on skill-bundle coverage. Every existing module (ai-fundamentals, prompt-engineering, claude-workflows, responsible-ai, practical-workflows) tagged with which skill dimensions it addresses. Path = topological order covering the SOC's priority gaps, estimated duration < 6 hours.",
+          "files": [
+            "backend/services/curriculum_service.py",
+            "backend/tests/test_curriculum_service.py",
+            "frontend/src/data/modules.ts"
+          ],
+          "agent": "architect",
+          "skills": ["backend-patterns"],
+          "acceptanceCriteria": [
+            "Every priority SOC resolves to a path of 3–7 modules.",
+            "Estimated total minutes ≤ 360.",
+            "Paths cover all three literacy dimensions at least once."
+          ],
+          "dependencies": ["P2-T3"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P2-T5",
+          "title": "Document SOC research methodology in DATA.md",
+          "description": "DATA.md (in-repo, gitignored raw data stays out) documents: source list with versions, aggregation formulas, confidence rubric, known limitations, per-SOC revision log. Not the public methodology page — that is deferred to FUTURE_IDEAS.md. This is engineering docs.",
+          "files": [
+            "DATA.md"
+          ],
+          "agent": "doc-updater",
+          "skills": ["content-research-writer"],
+          "acceptanceCriteria": [
+            "Every dataSources entry has a matching section in DATA.md.",
+            "Confidence rubric is quantitative where possible."
+          ],
+          "dependencies": ["P2-T2", "P2-T3", "P2-T4"],
+          "effort": "S"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-3",
+      "name": "Occupation Picker + Progressive Profile",
+      "goal": "Give users a way to find their occupation and build a minimal profile that drives personalization.",
+      "successCriteria": [
+        "A new user completes onboarding (role → occupation → parish) in under 90 seconds.",
+        "Occupation search returns relevant SOCs for common job-title queries.",
+        "Profile is persisted client-side and survives refresh."
+      ],
+      "tasks": [
+
+        {
+          "id": "P3-T1",
+          "title": "Build /occupations page with search",
+          "description": "Search by title keyword (e.g. 'welder', 'data analyst', 'nurse') and by SOC code. Debounced input, keyboard-navigable result list. Each result shows title, SOC, LA employment, top RLMAs, exposure-metric preview.",
+          "files": [
+            "frontend/src/pages/Occupations.tsx",
+            "frontend/src/components/occupations/OccupationSearch.tsx",
+            "frontend/src/components/occupations/OccupationResultCard.tsx",
+            "frontend/src/App.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "Search returns results in <200ms on warm cache.",
+            "a11y: results announced to screen readers; arrow-key navigation works.",
+            "Empty-state message guides to sector browsing."
+          ],
+          "dependencies": ["P1-T7", "P2-T4"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P3-T2",
+          "title": "Parish picker grouped by RLMA",
+          "description": "Dropdown or dialog showing 8 RLMAs with their constituent parishes. Selecting a parish auto-fills RLMA. Mobile: bottom-sheet.",
+          "files": [
+            "frontend/src/components/profile/ParishPicker.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "All 64 parishes selectable.",
+            "Selection persists via useProfile hook."
+          ],
+          "dependencies": ["P1-T3", "P1-T4"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P3-T3",
+          "title": "Sector + employer picker",
+          "description": "Two linked selects; employer list filters by parish if selected. priorityEmployers from the plan are highlighted with a 'megaproject-adjacent' badge.",
+          "files": [
+            "frontend/src/components/profile/SectorPicker.tsx",
+            "frontend/src/components/profile/EmployerPicker.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Selection optional at every step; user can skip.",
+            "Megaproject badges match louisianaContext.priorityEmployers."
+          ],
+          "dependencies": ["P3-T2"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P3-T4",
+          "title": "Progressive profile onboarding flow",
+          "description": "New route /onboarding: role → occupation → parish → sector → employer (optional). Every step skippable; profile is usable after role alone. Implemented as a single controlled wizard with per-step URL segment for browser back-button support.",
+          "files": [
+            "frontend/src/pages/Onboarding.tsx",
+            "frontend/src/components/profile/OnboardingWizard.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "Fresh user completes in <90s (manual QA).",
+            "Progress persists if they close the tab mid-flow.",
+            "Keyboard and screen-reader navigable."
+          ],
+          "dependencies": ["P3-T1", "P3-T2", "P3-T3"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P3-T5",
+          "title": "Redesign Profile page as assembled context view",
+          "description": "/profile shows: role, SOC card (w/ mini score preview), parish + RLMA, sector, employer if set, and progress stats. 'Edit' buttons deep-link back to onboarding steps.",
+          "files": [
+            "frontend/src/pages/Profile.tsx",
+            "frontend/src/components/profile/ProfileSummary.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "All profile fields visible; empty fields show '+ Add' prompt.",
+            "Visual hierarchy: SOC card most prominent."
+          ],
+          "dependencies": ["P3-T4"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P3-T6",
+          "title": "Diagnostic assessment → SOC suggestion",
+          "description": "Short (6–10 question) multiple-choice assessment that asks about daily tasks, tools used, decision authority, and output type. Maps answers to SOC candidates via a weighted lookup table. Surfaces top 3 SOC suggestions with confidence.",
+          "files": [
+            "frontend/src/pages/Assessment.tsx",
+            "frontend/src/components/assessment/AssessmentWizard.tsx",
+            "frontend/src/data/assessment.ts",
+            "backend/routers/assessment.py"
+          ],
+          "agent": "architect",
+          "skills": ["backend-patterns", "frontend-patterns"],
+          "acceptanceCriteria": [
+            "Assessment completes in <5 min.",
+            "Top suggestion confidence displayed.",
+            "User can override suggestion and pick SOC manually."
+          ],
+          "dependencies": ["P2-T1", "P3-T1"],
+          "effort": "L"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-4",
+      "name": "Personalization Engine",
+      "goal": "Turn the assembled profile into an adaptive learning experience — score cards, compare views, occupation-aware module filtering, and inline glossary.",
+      "successCriteria": [
+        "Score card visible on every occupation page and on the profile dashboard.",
+        "Two-SOC comparison functional and shareable via URL.",
+        "Modules reorder and filter based on the user's SOC.",
+        "Any glossary-covered term in module content is linkable to its term page."
+      ],
+      "tasks": [
+
+        {
+          "id": "P4-T1",
+          "title": "Score card component — 4 metrics with confidence + provenance",
+          "description": "Reusable component rendering exposure, augmentation, replacement, wage premium. Each metric: value, confidence badge, source footnote link. 'Learn how this is computed' link routes to /glossary#methodology (and eventually the deferred /methodology page).",
+          "files": [
+            "frontend/src/components/occupations/ScoreCard.tsx",
+            "frontend/src/components/occupations/ScoreCardMetric.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design", "design-consultation"],
+          "acceptanceCriteria": [
+            "Four metrics visible with clear legend.",
+            "Confidence visually distinct (color + text label).",
+            "Source footnotes are keyboard-focusable.",
+            "Component is role-agnostic — works in comparison and detail views."
+          ],
+          "dependencies": ["P2-T2", "P1-T2"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P4-T2",
+          "title": "Compare two SOCs view",
+          "description": "/compare/:socA/:socB route. Side-by-side score cards + diff view highlighting deltas + career-ladder indicator (is B a plausible next step from A? based on relatedSOCs).",
+          "files": [
+            "frontend/src/pages/Compare.tsx",
+            "frontend/src/components/occupations/ScoreCardCompare.tsx",
+            "frontend/src/App.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "URL is shareable and reproduces the view.",
+            "Delta indicators render with appropriate semantics (exposure going up can mean either 'at risk' or 'opportunity' — label clarifies).",
+            "Mobile-friendly accordion layout."
+          ],
+          "dependencies": ["P4-T1"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P4-T3",
+          "title": "Occupation-aware module filtering on /learn",
+          "description": "When profile has a SOC, /learn reorders modules by the user's learningPath priority. Unrelated modules still visible under 'Browse all'. 'Recommended for your role' badge on prioritized modules.",
+          "files": [
+            "frontend/src/pages/Learn.tsx",
+            "frontend/src/components/learn/RecommendedPath.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Without profile: behaves as today.",
+            "With SOC: prioritized list renders first; 'why these?' link expands rationale.",
+            "Accessibility: prioritization does not hide content from keyboard navigation."
+          ],
+          "dependencies": ["P2-T4", "P1-T4"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P4-T4",
+          "title": "Personalized learning path view on occupation page",
+          "description": "/occupations/:soc route shows: occupation header, score card, skill bundle tabs (Technical / Critical / Ethical / Domain), learning path with module links, and 'Compare with another SOC' CTA.",
+          "files": [
+            "frontend/src/pages/OccupationDetail.tsx",
+            "frontend/src/components/occupations/SkillBundleTabs.tsx",
+            "frontend/src/components/occupations/LearningPathList.tsx",
+            "frontend/src/App.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "All sections render with data from /occupation/:soc and /curriculum/:soc.",
+            "Learning-path items deep-link into existing module routes.",
+            "Empty-state copy when SOC lacks data."
+          ],
+          "dependencies": ["P4-T1", "P2-T4"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P4-T5",
+          "title": "Career-ladder visualization",
+          "description": "On occupation detail, show relatedSOCs as a small graph or list with score-card deltas. Click to compare. Highlights upward-mobility paths where replacement risk drops or wage premium rises.",
+          "files": [
+            "frontend/src/components/occupations/CareerLadder.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "Renders at least 3 related SOCs when data permits.",
+            "Accessible: not solely color-coded."
+          ],
+          "dependencies": ["P4-T2"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P4-T6",
+          "title": "Inline glossary tooltip in module content",
+          "description": "ContentRenderer recognizes [[term:slug]] markup in paragraph/list/callout blocks and renders an accessible popover with the short definition + link to /glossary#slug.",
+          "files": [
+            "frontend/src/components/learn/ContentRenderer.tsx",
+            "frontend/src/components/glossary/GlossaryTooltip.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Keyboard users can open/close tooltip with space + escape.",
+            "Screen readers announce 'term: {term}, definition: {short}'.",
+            "Bad slug references logged in dev console but do not break render."
+          ],
+          "dependencies": ["P1-T2"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P4-T7",
+          "title": "Full glossary page at /glossary",
+          "description": "A-Z index, category filters (ai-concepts, la-workforce, methodology, tools), search, deep-link anchors per term. Each entry: term, short, long, related, see-also links.",
+          "files": [
+            "frontend/src/pages/Glossary.tsx",
+            "frontend/src/components/glossary/GlossaryEntry.tsx",
+            "frontend/src/components/glossary/GlossaryIndex.tsx",
+            "frontend/src/App.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "interface-design"],
+          "acceptanceCriteria": [
+            "All ≥40 terms render.",
+            "URL hashes are stable and shareable.",
+            "Category filter preserves scroll position."
+          ],
+          "dependencies": ["P1-T2"],
+          "effort": "M"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-5",
+      "name": "Louisiana Integrations",
+      "goal": "Connect the curriculum to real Louisiana megaprojects, parishes, and wage data.",
+      "successCriteria": [
+        "Users in occupations adjacent to a megaproject see that project as a pathway.",
+        "Parish selection surfaces local employer options.",
+        "Wage premium is presented in LA dollars, not just as a %."
+      ],
+      "tasks": [
+
+        {
+          "id": "P5-T1",
+          "title": "Megaproject data + directory page",
+          "description": "frontend/src/data/megaprojects.ts with canonical entries (Meta Hyperion, Amazon AWS, Hyundai Steel, Hut 8, SSE/Persona AI). /megaprojects page lists them with parish, investment, workforce size, relevant SOCs, typical roles, and a 'prepare for this employer' CTA.",
+          "files": [
+            "frontend/src/data/megaprojects.ts",
+            "frontend/src/pages/Megaprojects.tsx",
+            "frontend/src/components/megaprojects/MegaprojectCard.tsx",
+            "frontend/src/App.tsx"
+          ],
+          "agent": "content-research-writer",
+          "skills": ["content-research-writer", "frontend-patterns"],
+          "acceptanceCriteria": [
+            "Every megaproject entry cites LED announcement date.",
+            "CTA links into occupation detail for the most relevant SOC.",
+            "No speculative project details; investment numbers match verified LED announcements."
+          ],
+          "dependencies": ["P4-T4"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P5-T2",
+          "title": "Parish-aware content surfacing",
+          "description": "Occupation detail and module pages optionally surface a 'In {parish}/{RLMA}' section showing relevant local employers, megaprojects, training providers.",
+          "files": [
+            "frontend/src/components/occupations/ParishContext.tsx",
+            "frontend/src/hooks/useParishContext.ts"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Renders only when profile has parish/RLMA set.",
+            "Gracefully degrades if no local data for that parish.",
+            "No reliance on LSU-project data."
+          ],
+          "dependencies": ["P5-T1", "P1-T3"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P5-T3",
+          "title": "Wage premium surfacing — percent + dollars",
+          "description": "Score card shows 'AI-skilled version of this role earns ~X% more' AND an absolute LA dollar estimate derived from the occupation's OEWS median wage. Tooltip explains derivation.",
+          "files": [
+            "frontend/src/components/occupations/ScoreCardMetric.tsx",
+            "backend/services/occupation_service.py"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns", "backend-patterns"],
+          "acceptanceCriteria": [
+            "Dollar figure cites BLS OEWS LA year.",
+            "Shows 'low-confidence estimate' label where applicable.",
+            "Unit test covers wage-premium math."
+          ],
+          "dependencies": ["P4-T1"],
+          "effort": "S"
+        },
+
+        {
+          "id": "P5-T4",
+          "title": "Star Jobs integration — stub interface",
+          "description": "Abstract client for the LED Star Jobs portal: given a SOC + parish, return open postings. Ship with a stub (mock data) and environment flag for future real integration. UI surface: 'See open Louisiana jobs for this role'.",
+          "files": [
+            "backend/services/starjobs_client.py",
+            "backend/routers/jobs.py",
+            "frontend/src/components/occupations/OpenJobs.tsx",
+            "frontend/src/lib/api.ts"
+          ],
+          "agent": "architect",
+          "skills": ["backend-patterns", "api-design"],
+          "acceptanceCriteria": [
+            "Client interface mockable via env var STARJOBS_STUB=true.",
+            "README documents switch-over process for real integration.",
+            "Stub returns realistic sample postings."
+          ],
+          "dependencies": ["P5-T1"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P5-T5",
+          "title": "Employer partnership data layer",
+          "description": "Schema for employer-specific curriculum tracks (e.g. 'Amazon AWS Data Center Ops'). Not surfaced to end users yet; scaffolds the post-launch cohort feature from FUTURE_IDEAS.md.",
+          "files": [
+            "backend/data/migrations/0003_employer_tracks.sql",
+            "backend/services/employer_service.py"
+          ],
+          "agent": "database-reviewer",
+          "skills": ["backend-patterns"],
+          "acceptanceCriteria": [
+            "Schema supports N-to-M employer ↔ SOC ↔ module_override relationship.",
+            "No UI surface yet; tested via API only."
+          ],
+          "dependencies": ["P1-T5"],
+          "effort": "S"
+        }
+      ]
+    },
+
+    {
+      "id": "phase-6",
+      "name": "Polish, Launch, Credentialing, Integrations",
+      "goal": "Ship v1. Accessibility, internationalization, offline, analytics, certificates, MCP surface, backend deploy.",
+      "successCriteria": [
+        "WCAG 2.1 AA audit passes.",
+        "EN + ES + FR baseline strings complete.",
+        "PWA installable; core content available offline.",
+        "Backend deployed to Fly.io (or chosen alternative).",
+        "MCP server exposes SOC+curriculum data to external clients.",
+        "Credential export generates a shareable artifact."
+      ],
+      "tasks": [
+
+        {
+          "id": "P6-T1",
+          "title": "WCAG 2.1 AA audit & remediation",
+          "description": "Run axe + manual keyboard + screen-reader audits across all pages. Fix focus management, color contrast, form labels, ARIA roles. Document known exceptions.",
+          "files": [
+            "frontend/src/**",
+            "docs/accessibility.md"
+          ],
+          "agent": "qa",
+          "skills": ["design-review", "qa"],
+          "acceptanceCriteria": [
+            "axe CLI reports 0 violations at AA.",
+            "Manual audit covers keyboard, VoiceOver, NVDA.",
+            "Docs list any contextual exceptions with rationale."
+          ],
+          "dependencies": ["P4-T7", "P5-T3"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P6-T2",
+          "title": "Internationalization — EN / ES / Louisiana-French",
+          "description": "Introduce react-i18next (or equivalent). Extract all user-facing strings from components. Provide EN baseline, ES translation, FR-LA translation. Content data files (modules, glossary) remain EN for v1; path to localized content captured in FUTURE_IDEAS.md.",
+          "files": [
+            "frontend/src/i18n/index.ts",
+            "frontend/src/i18n/locales/en.json",
+            "frontend/src/i18n/locales/es.json",
+            "frontend/src/i18n/locales/fr.json",
+            "frontend/src/components/layout/LanguagePicker.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Every page renders in all three locales.",
+            "Language preference persists in userStore.",
+            "Unit test asserts no hardcoded user-facing strings remain."
+          ],
+          "dependencies": ["P6-T1"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P6-T3",
+          "title": "Offline-first PWA",
+          "description": "Service worker caching: Vite PWA plugin. Module content + glossary available offline. Lab feature clearly marked as online-only.",
+          "files": [
+            "frontend/vite.config.ts",
+            "frontend/public/manifest.webmanifest",
+            "frontend/src/components/layout/OfflineBanner.tsx"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "App installable from Chrome/Safari.",
+            "Lighthouse PWA score ≥90.",
+            "Offline test: disable network, /learn still renders."
+          ],
+          "dependencies": ["P6-T2"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T4",
+          "title": "Opt-in learning analytics",
+          "description": "Optional anonymous event stream (module started, section completed, quiz answered, assessment result, SOC selected). Clear consent modal; data stays on our backend (no third-party). Powers future internal research without requiring personal identifiers.",
+          "files": [
+            "frontend/src/lib/analytics.ts",
+            "frontend/src/components/consent/ConsentModal.tsx",
+            "backend/routers/analytics.py",
+            "backend/data/migrations/0004_analytics.sql"
+          ],
+          "agent": "security-reviewer",
+          "skills": ["frontend-patterns", "backend-patterns", "api-design"],
+          "acceptanceCriteria": [
+            "Opt-in default OFF.",
+            "No PII collected; session id is rotating anonymous UUID.",
+            "Consent revocable and honored immediately.",
+            "Security review signed off."
+          ],
+          "dependencies": ["P6-T1"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T5",
+          "title": "Certificate / badge system",
+          "description": "On completing a full learning path for a SOC, user earns a named badge. Stored client-side by default; server-side if auth is enabled (no auth introduced yet in v1).",
+          "files": [
+            "frontend/src/store/progressStore.ts",
+            "frontend/src/components/profile/BadgeList.tsx",
+            "frontend/src/data/badges.ts"
+          ],
+          "agent": "code-reviewer",
+          "skills": ["frontend-patterns"],
+          "acceptanceCriteria": [
+            "Badge visible on profile.",
+            "Badge JSON export available (Open Badges 3.0-shaped stub)."
+          ],
+          "dependencies": ["P4-T4"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T6",
+          "title": "Credential export — LinkedIn / résumé artifact",
+          "description": "User can generate a PDF/Markdown summary of their completed tracks with verifiable-credentials-shaped metadata. Signed hash for basic tamper-resistance.",
+          "files": [
+            "frontend/src/components/profile/CredentialExport.tsx",
+            "backend/services/credential_service.py",
+            "backend/routers/credentials.py"
+          ],
+          "agent": "architect",
+          "skills": ["backend-patterns", "frontend-patterns"],
+          "acceptanceCriteria": [
+            "PDF downloads successfully.",
+            "Markdown version renders on GitHub.",
+            "Signed hash verifiable via /credentials/verify/:hash."
+          ],
+          "dependencies": ["P6-T5"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T7",
+          "title": "MCP server for external tool integration",
+          "description": "New Python package under /mcp-server/ exposing tools: get_occupation(soc), search_occupations(query), get_curriculum(soc), get_glossary_term(slug), compare_socs(a, b). Wraps the existing backend repository layer. Streamable HTTP transport; stdio also supported for local use.",
+          "files": [
+            "mcp-server/pyproject.toml",
+            "mcp-server/src/ai_literacy_mcp/server.py",
+            "mcp-server/src/ai_literacy_mcp/tools.py",
+            "mcp-server/README.md",
+            "mcp-server/tests/test_tools.py"
+          ],
+          "agent": "architect",
+          "skills": ["mcp-builder", "mcp-server-patterns", "python-patterns"],
+          "acceptanceCriteria": [
+            "Server registers successfully with Claude Desktop / Claude Code.",
+            "All five tools documented with input/output schemas.",
+            "Tests cover at least 2 tools end-to-end against a local backend."
+          ],
+          "dependencies": ["P1-T6", "P4-T7"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P6-T8",
+          "title": "Security review of end-to-end surface",
+          "description": "Independent security pass: API key handling, CORS, rate limits, analytics PII scope, MCP auth, dependency audit, hosting misconfiguration checks.",
+          "files": [
+            "docs/security-review.md"
+          ],
+          "agent": "security-reviewer",
+          "skills": ["review"],
+          "acceptanceCriteria": [
+            "No HIGH or CRITICAL findings open.",
+            "Mitigations documented for MEDIUM findings.",
+            "OWASP Top 10 checklist attached."
+          ],
+          "dependencies": ["P6-T4", "P6-T6", "P6-T7"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T9",
+          "title": "Deploy backend to Fly.io (or chosen alternative)",
+          "description": "Containerize FastAPI; provision a small Fly app; bind VITE_API_URL in Vercel to the deployed URL. Continuous deploy from main. Health check, basic alerting.",
+          "files": [
+            "backend/Dockerfile",
+            "backend/fly.toml",
+            ".github/workflows/deploy-backend.yml",
+            "docs/deploy.md"
+          ],
+          "agent": "general-purpose",
+          "skills": ["ship"],
+          "acceptanceCriteria": [
+            "Production URL reachable; /health returns 200.",
+            "Secrets set via platform secret manager, not checked in.",
+            "Frontend Vercel deploy points to prod backend."
+          ],
+          "dependencies": ["P6-T8"],
+          "effort": "M"
+        },
+
+        {
+          "id": "P6-T10",
+          "title": "Full E2E test suite",
+          "description": "Playwright journeys: onboarding, occupation search, profile completion, module completion, Lab prompt round-trip, compare-SOCs, glossary lookup, badge earn.",
+          "files": [
+            "frontend/tests/e2e/*.spec.ts"
+          ],
+          "agent": "e2e-runner",
+          "skills": ["e2e-testing", "e2e"],
+          "acceptanceCriteria": [
+            "≥8 critical-path journeys green in CI.",
+            "Traces + videos uploaded on failure.",
+            "Flaky tests quarantined, not deleted."
+          ],
+          "dependencies": ["P6-T9"],
+          "effort": "L"
+        },
+
+        {
+          "id": "P6-T11",
+          "title": "Document release — v1.0",
+          "description": "CHANGELOG, README updates, short public explainer (non-policy) about what the app does, how to self-host, and how to contribute.",
+          "files": [
+            "README.md",
+            "CHANGELOG.md",
+            "CONTRIBUTING.md"
+          ],
+          "agent": "doc-updater",
+          "skills": ["document-release", "changelog-generator"],
+          "acceptanceCriteria": [
+            "README quickstart works from clean clone.",
+            "CHANGELOG reflects all phases."
+          ],
+          "dependencies": ["P6-T10"],
+          "effort": "S"
+        }
+      ]
+    }
+  ],
+
+  "crossCuttingConcerns": [
+    {
+      "id": "CC-1",
+      "name": "Data freshness policy",
+      "description": "BLS OEWS LA is annual; O*NET is rolling; Eloundou is static. Document per-dataset refresh expectations; surface 'data as of' timestamps in the UI."
+    },
+    {
+      "id": "CC-2",
+      "name": "Confidence transparency",
+      "description": "Every computed number in the UI carries a confidence label and a source link. No unqualified statistics."
+    },
+    {
+      "id": "CC-3",
+      "name": "Content governance",
+      "description": "Skill-bundle changes require content-research-writer review + at least one peer sign-off. Keep a per-SOC revision log."
+    },
+    {
+      "id": "CC-4",
+      "name": "Privacy & local-first default",
+      "description": "No account required. Profile and progress persist in localStorage only unless user opts in to server-side sync in a future phase."
+    },
+    {
+      "id": "CC-5",
+      "name": "Louisiana scope lock",
+      "description": "The app's content and data are Louisiana-first. National defaults exist (e.g. PwC wage premium baseline) but are explicitly labeled as national priors when surfaced."
+    },
+    {
+      "id": "CC-6",
+      "name": "Agent / skill usage hygiene",
+      "description": "Claude coding agent MUST invoke planner for any task above M effort before coding; MUST invoke tdd-guide for test-first on every implementation task; MUST invoke code-reviewer before marking any task complete."
+    }
+  ],
+
+  "agentsReference": {
+    "planner": "Used at start of any L or XL task to produce an implementation plan.",
+    "architect": "System design / data modeling tasks (e.g. P1-T1, P2-T4, P3-T6, P5-T4, P6-T6, P6-T7).",
+    "tdd-guide": "Test-first workflow enforcement on every implementation task.",
+    "code-reviewer": "MUST run before any task is marked complete.",
+    "security-reviewer": "Mandatory for analytics, credentials, and full surface review (P6-T4, P6-T8).",
+    "database-reviewer": "Backend data layer tasks (P1-T5, P2-T2, P5-T5).",
+    "content-research-writer": "Glossary, skill bundles, methodology docs, megaproject directory.",
+    "doc-updater": "DATA.md, release docs (P2-T5, P6-T11).",
+    "e2e-runner": "Playwright suite (P6-T10).",
+    "qa": "Visual/UX/accessibility QA (P0-T4, P6-T1).",
+    "general-purpose": "Deployment and cross-system integration (P6-T9).",
+    "refactor-cleaner": "Called as-needed when tasks introduce duplication."
+  },
+
+  "skillsReference": {
+    "claude-api": "Any change to model ID, SDK usage, prompt-caching adoption.",
+    "mcp-builder": "Standing up the MCP server (P6-T7).",
+    "mcp-server-patterns": "Tool/resource definitions for the MCP server.",
+    "frontend-patterns": "React/Vite/Tailwind code organization across phases.",
+    "backend-patterns": "FastAPI structure, repository pattern, API design.",
+    "api-design": "/occupation, /curriculum, /assessment, /jobs, /analytics, /credentials.",
+    "tdd-workflow": "Test-first for every task with code changes.",
+    "python-patterns": "Backend idioms, Pydantic, SQLAlchemy or plain SQLite.",
+    "python-testing": "Backend test coverage targets.",
+    "e2e-testing": "Playwright patterns.",
+    "e2e": "Runs the Playwright suite and uploads artifacts.",
+    "interface-design": "UX of SOC picker, score card, compare view, glossary.",
+    "design-consultation": "First-time visual decisions for the score card and compare view.",
+    "design-review": "Visual polish pass in P6-T1.",
+    "coding-standards": "TypeScript strictness, readonly conventions, etc.",
+    "content-research-writer": "Glossary long-form, DATA.md, megaproject copy.",
+    "docs": "Context7 lookups for library API surface (React Router v7, Zustand persist, Vite PWA, etc.).",
+    "review": "Pre-landing PR review for every merged phase.",
+    "ship": "Release workflow (P6-T9, P6-T11).",
+    "investigate": "Any regression encountered during test-suite construction.",
+    "document-release": "Public v1.0 release docs.",
+    "changelog-generator": "CHANGELOG.md at v1.0.",
+    "qa": "Dogfood sessions; full app pass in P6-T1.",
+    "browse": "Dev verification in P0-T4.",
+    "careful": "Invoked before any destructive DB migration or secret handling.",
+    "verification-loop": "Phase-end verification before moving to next phase."
+  },
+
+  "deferredIdeas": {
+    "dockPath": "FUTURE_IDEAS.md",
+    "summary": "Methodology page (public /methodology explainer), cross-project primary workforce survey, employer cohort funding model, LCTCS LMS LTI, voice-first UI, AR job-shadowing content, anonymous peer benchmarking, regional communities of practice, and parked technical debt items.",
+    "rule": "When a task in this plan is blocked by an idea in FUTURE_IDEAS.md, promote it into a new phase with explicit user approval — do not silently expand scope."
+  },
+
+  "executionContract": {
+    "orderOfOperations": [
+      "Read this whole plan first.",
+      "Invoke planner agent to produce an implementation plan for the next task before editing code.",
+      "Invoke tdd-guide to author tests before implementation.",
+      "Implement the minimum change to pass tests.",
+      "Invoke code-reviewer. Address CRITICAL + HIGH findings.",
+      "Mark the task complete only when all acceptanceCriteria are demonstrably met.",
+      "If a task reveals a missing dependency, add it explicitly to the plan's change log rather than silently expanding scope.",
+      "Never touch files under /Users/artembaranovski/Downloads/LSU AI Research. That project is separate."
+    ],
+    "phaseGate": "A phase is complete when every task inside it meets acceptanceCriteria AND the phase-level successCriteria hold.",
+    "changeLogLocation": "docs/plan-changes.md — append-only record of scope changes with timestamp + reason."
+  }
+}
