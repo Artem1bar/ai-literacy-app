@@ -24,10 +24,16 @@ export function OccupationSearch({
 }: OccupationSearchProps) {
   const [query, setQuery] = useState(initialQuery)
   const [activeIdx, setActiveIdx] = useState(0)
+  const [prevDebouncedQuery, setPrevDebouncedQuery] = useState("")
   const search = useOccupationSearch(query, 25)
   const listboxRef = useRef<HTMLUListElement>(null)
 
   const results = search.data?.results ?? []
+
+  if (prevDebouncedQuery !== search.debouncedQuery) {
+    setPrevDebouncedQuery(search.debouncedQuery)
+    setActiveIdx(0)
+  }
 
   const selectHit = useCallback(
     (hit: OccupationSearchHit | undefined) => {
@@ -52,10 +58,6 @@ export function OccupationSearch({
   }
 
   useEffect(() => {
-    setActiveIdx(0)
-  }, [search.debouncedQuery])
-
-  useEffect(() => {
     const el = listboxRef.current?.querySelector<HTMLLIElement>(
       `li[data-idx="${activeIdx}"]`,
     )
@@ -66,6 +68,7 @@ export function OccupationSearch({
     search.debouncedQuery.trim().length > 0 &&
     !search.isLoading &&
     !search.isFetching &&
+    !search.isError &&
     results.length === 0
 
   return (

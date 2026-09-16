@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "frontend",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "frontend", "dev"],
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "PATH=/opt/homebrew/opt/node@22/bin:$PATH pnpm --dir frontend dev"],
       "port": 5173
     },
     {
