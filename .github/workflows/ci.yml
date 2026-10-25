@@ -48,4 +48,4 @@ jobs:
 
       - run: pip install uv && uv sync --group dev
 
-      - run: uv run pytest tests/ -m unit -x
+      - run: uv run pytest tests/ -x
